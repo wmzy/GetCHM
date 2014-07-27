@@ -9,13 +9,12 @@ namespace Spider
 {
     class Downloader : IDownloader
     {
-        
         public Downloader()
         {
         }
         public void Download(string url)
         {
-            HttpWebRequest hwr = WebRequest.CreateHttp()
+            HttpWebRequest hwr = WebRequest.CreateHttp(url);
         }
     }
 }
