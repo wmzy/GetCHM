@@ -9,6 +9,8 @@ namespace Test
         [TestMethod]
         public void TestMethod1()
         {
+            var uri = new Uri("http://baidu.com");
+            Console.WriteLine(uri.GetHashCode());
         }
     }
 }

@@ -1,0 +1,9 @@
+F:\git\wmzy\GetCHM\Spider\bin\Debug\Spider.dll
+F:\git\wmzy\GetCHM\Spider\bin\Debug\Spider.pdb
+F:\git\wmzy\GetCHM\Spider\obj\Debug\Spider.csprojResolveAssemblyReference.cache
+F:\git\wmzy\GetCHM\Spider\obj\Debug\Spider.dll
+F:\git\wmzy\GetCHM\Spider\obj\Debug\Spider.pdb
+G:\zlt\git\GetCHM\Spider\bin\Debug\Spider.dll
+G:\zlt\git\GetCHM\Spider\bin\Debug\Spider.pdb
+G:\zlt\git\GetCHM\Spider\obj\Debug\Spider.dll
+G:\zlt\git\GetCHM\Spider\obj\Debug\Spider.pdb
