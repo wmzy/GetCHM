@@ -8,6 +8,8 @@ namespace Spider
 {
     public interface IDownloader
     {
-        void Download(string url);
+        void Start();
+        void Pause();
+        void Stop();
     }
 }

@@ -1,57 +1,76 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spider
 {
-    class Registry : IRegistry
+    sealed class Registry : IRegistry
     {
-        private HashSet<Record> _records;
-        private Queue<Record> _newRecords;
-        private Queue<Record> _downloadedRecords; 
+        private readonly HashSet<Uri> _records;
+        private readonly Queue<Uri> _newRecords;
+        private readonly Queue<Uri> _downloadedRecords;
 
-        public Registry()
+        Registry()
         {
-            _records = new HashSet<Record>();
-            _newRecords = new Queue<Record>();
-            _downloadedRecords = new Queue<Record>();
+            _records = new HashSet<Uri>();
+            _newRecords = new Queue<Uri>();
+            _downloadedRecords = new Queue<Uri>();
         }
-
-        public void Push(Uri uri)
+        public static Registry Instance
         {
-            var record = new Record()
+            get
             {
-                Uri = uri
-            };
-            if (_records.Contains(record)) return;
+                return DelayConstructor.Instance;
+            }
+        }
+        class DelayConstructor
+        {
+            // Explicit static constructor to tell C# compiler
+            // not to mark type as beforefieldinit
+            static DelayConstructor()
+            {
+            }
 
-            record.Path = getFilePath(uri);
-            record.State = State.New;
-            _records.Add(record);
-            _newRecords.Enqueue(record);
+            internal static readonly Registry Instance = new Registry();
         }
 
-        public Record GetNew()
+        public void Add(Uri uri)
         {
-            return _newRecords.Dequeue();
+            lock (_records)
+            {
+                if (_records.Contains(uri)) return;
+
+                _records.Add(uri);
+            }
+
+            lock (((ICollection)_newRecords).SyncRoot)
+            {
+                _newRecords.Enqueue(uri);
+            }
         }
 
-        public void WaitParse(Record record)
+        public Uri GetForDownload()
         {
-            _downloadedRecords.Enqueue(record);
+            lock (((ICollection)_newRecords).SyncRoot)
+            {
+                return _newRecords.Dequeue();
+            }
         }
 
-        public Record GetForParse()
+        public void WaitParse(Uri uri)
         {
-            return _downloadedRecords.Dequeue();
+            lock (((ICollection)_newRecords).SyncRoot)
+            {
+                _downloadedRecords.Enqueue(uri);
+            }
         }
 
-        private string getFilePath(Uri u)
+        public Uri GetForParse()
         {
-            throw new NotImplementedException();
+            lock (((ICollection)_newRecords).SyncRoot)
+            {
+                return _downloadedRecords.Dequeue();
+            }
         }
     }
 }
