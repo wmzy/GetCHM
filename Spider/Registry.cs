@@ -7,14 +7,11 @@ namespace Spider
     sealed class Registry : IRegistry
     {
         private readonly HashSet<Uri> _records;
-        private readonly Queue<Uri> _newRecords;
-        private readonly Queue<Uri> _downloadedRecords;
+        private List<Uri> _newRecords = new List<Uri>();
 
         Registry()
         {
             _records = new HashSet<Uri>();
-            _newRecords = new Queue<Uri>();
-            _downloadedRecords = new Queue<Uri>();
         }
         public static Registry Instance
         {
@@ -23,6 +20,7 @@ namespace Spider
                 return DelayConstructor.Instance;
             }
         }
+// ReSharper disable once ClassNeverInstantiated.Local
         class DelayConstructor
         {
             // Explicit static constructor to tell C# compiler
@@ -31,6 +29,7 @@ namespace Spider
             {
             }
 
+// ReSharper disable once MemberHidesStaticFromOuterClass
             internal static readonly Registry Instance = new Registry();
         }
 
@@ -45,32 +44,19 @@ namespace Spider
 
             lock (((ICollection)_newRecords).SyncRoot)
             {
-                _newRecords.Enqueue(uri);
+                _newRecords.Add(uri);
             }
         }
 
-        public Uri GetForDownload()
+        public List<Uri> GetNews()
         {
+            var news = _newRecords;
             lock (((ICollection)_newRecords).SyncRoot)
             {
-                return _newRecords.Dequeue();
+                _newRecords = new List<Uri>();
             }
-        }
 
-        public void WaitParse(Uri uri)
-        {
-            lock (((ICollection)_newRecords).SyncRoot)
-            {
-                _downloadedRecords.Enqueue(uri);
-            }
-        }
-
-        public Uri GetForParse()
-        {
-            lock (((ICollection)_newRecords).SyncRoot)
-            {
-                return _downloadedRecords.Dequeue();
-            }
+            return news;
         }
     }
 }

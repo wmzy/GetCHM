@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Spider
 {
     interface IRegistry
     {
         void Add(Uri uri);
-        Uri GetForDownload();
-        void WaitParse(Uri record);
-        Uri GetForParse();
+        List<Uri> GetNews();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -19,19 +20,55 @@ namespace Spider
 
         public void Start()
         {
-            while (true)
+            List<Uri> urilList = _registry.GetNews();
+            while (urilList.Count > 0)
             {
                 try
                 {
-                    Uri uri = _registry.GetForDownload();
-                    HttpWebRequest hwr = WebRequest.CreateHttp(uri);
+                    Parallel.ForEach(urilList, async (uri) =>
+                    {
+                        HttpWebRequest hwr = WebRequest.CreateHttp(uri);
+                        var res = await hwr.GetResponseAsync();
+                        if (Filter(res))
+                        {
+                            if (res.ContentType.Contains("text/html"))
+                            {
+                                var hDoc = new HtmlDocument();
+                                hDoc.Load(res.GetResponseStream());
+                                ParseUrl(hDoc);
+                                hDoc.Save(Path.Combine(FilePath, uri.GetHashCode().ToString()));
+                            }
+                            else
+                            {
+                                using (var fs = File.OpenWrite(FilePath + uri.GetHashCode().ToString()))
+                                {
+                                    await res.GetResponseStream().CopyToAsync(fs);
+                                }
+                            }
+                        }
+                    });
                 }
-                catch (Exception)
+                catch (ArgumentNullException)
                 {
-                    Thread.Sleep(1000);
+                }
+                catch (AggregateException)
+                {
                 }
             }
         }
+
+        private void ParseUrl(HtmlDocument hDoc)
+        {
+            List<Uri> urls = new List<Uri>();
+            string aQuery = "//a";
+            string imgQuery = "//img@src";
+            var elements = hDoc.DocumentNode.SelectNodes(aQuery);
+            foreach (var elem in elements)
+            {
+            }
+        }
+
+        public Filter Filter = res => true;
 
         public void Pause()
         {
@@ -42,5 +79,9 @@ namespace Spider
         {
             throw new NotImplementedException();
         }
+
+        public string FilePath { get; set; }
     }
+    
+    delegate bool Filter(WebResponse res);
 }
