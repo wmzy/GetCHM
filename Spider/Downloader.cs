@@ -10,9 +10,20 @@ using HtmlAgilityPack;
 
 namespace Spider
 {
-    class Downloader : IDownloader
+    public class Downloader : IDownloader
     {
         private readonly IRegistry _registry;
+
+        public Downloader()
+        {
+            _registry = Registry.Instance;
+            FilePath = @"D:\";
+            ElementQueries = new List<ElementQuery>()
+            {
+                new ElementQuery() {Query = "//a", AttributeName = "href"},
+                new ElementQuery() {Query = "//img", AttributeName = "src"}
+            };
+        }
         public Downloader(IRegistry registry)
         {
             _registry = registry;
@@ -28,21 +39,26 @@ namespace Spider
                     Parallel.ForEach(urilList, async (uri) =>
                     {
                         HttpWebRequest hwr = WebRequest.CreateHttp(uri);
-                        var res = await hwr.GetResponseAsync();
-                        if (Filter(res))
+                        using (var res = await hwr.GetResponseAsync())
                         {
-                            if (res.ContentType.Contains("text/html"))
+                            if (Filter(res))
                             {
-                                var hDoc = new HtmlDocument();
-                                hDoc.Load(res.GetResponseStream());
-                                ParseUrl(hDoc);
-                                hDoc.Save(Path.Combine(FilePath, uri.GetHashCode().ToString()));
-                            }
-                            else
-                            {
-                                using (var fs = File.OpenWrite(FilePath + uri.GetHashCode().ToString()))
+                                if (res.ContentType.Contains("text/html"))
                                 {
-                                    await res.GetResponseStream().CopyToAsync(fs);
+                                    var hDoc = new HtmlDocument();
+                                    using (var resStream = res.GetResponseStream())
+                                    {
+                                        hDoc.Load(resStream);
+                                    }
+                                    ReplaceUrl(hDoc, uri);
+                                    hDoc.Save(Path.Combine(FilePath, uri.GetHashCode().ToString()));
+                                }
+                                else
+                                {
+                                    using (var fs = File.OpenWrite(FilePath + uri.GetHashCode().ToString()))
+                                    {
+                                        await res.GetResponseStream().CopyToAsync(fs);
+                                    }
                                 }
                             }
                         }
@@ -54,21 +70,34 @@ namespace Spider
                 catch (AggregateException)
                 {
                 }
+                urilList = _registry.GetNews();
             }
         }
 
-        private void ParseUrl(HtmlDocument hDoc)
+        public List<ElementQuery> ElementQueries { get; set; }
+
+        private void ReplaceUrl(HtmlDocument hDoc, Uri uri)
         {
-            List<Uri> urls = new List<Uri>();
-            string aQuery = "//a";
-            string imgQuery = "//img@src";
-            var elements = hDoc.DocumentNode.SelectNodes(aQuery);
-            foreach (var elem in elements)
+            foreach (var elementQuery in ElementQueries)
             {
+                var elements = hDoc.DocumentNode.SelectNodes(elementQuery.Query);
+                if (elements == null)
+                    continue;
+                foreach (var elem in elements)
+                {
+                    var url = elem.Attributes[elementQuery.AttributeName].Value;
+                    if (FilterUrl(url))
+                    {
+                        var newUrl = new Uri(uri, url);
+                        elem.Attributes[elementQuery.AttributeName].Value = newUrl.GetHashCode() + url.Substring(url.IndexOf('#'));
+                        _registry.Add(newUrl);
+                    }
+                }
             }
         }
 
         public Filter Filter = res => true;
+        public FilterUrl FilterUrl = url => true;
 
         public void Pause()
         {
@@ -82,6 +111,8 @@ namespace Spider
 
         public string FilePath { get; set; }
     }
-    
-    delegate bool Filter(WebResponse res);
+
+    public delegate bool Filter(WebResponse res);
+
+    public delegate bool FilterUrl(string url);
 }

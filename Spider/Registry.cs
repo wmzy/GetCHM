@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Spider
 {
-    sealed class Registry : IRegistry
+    public sealed class Registry : IRegistry
     {
         private readonly HashSet<Uri> _records;
         private List<Uri> _newRecords = new List<Uri>();

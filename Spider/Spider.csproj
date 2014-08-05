@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Downloader.cs" />
+    <Compile Include="ElementQuery.cs" />
     <Compile Include="IDownloader.cs" />
     <Compile Include="IRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
