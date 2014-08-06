@@ -6,6 +6,7 @@ namespace Spider
     public interface IRegistry
     {
         void Add(Uri uri);
-        List<Uri> GetNews();
+        bool HasNew { get; }
+        Uri PopNew();
     }
 }

@@ -7,7 +7,7 @@ namespace Spider
     public sealed class Registry : IRegistry
     {
         private readonly HashSet<Uri> _records;
-        private List<Uri> _newRecords = new List<Uri>();
+        private Queue<Uri> _newRecords = new Queue<Uri>();
 
         Registry()
         {
@@ -44,19 +44,20 @@ namespace Spider
 
             lock (((ICollection)_newRecords).SyncRoot)
             {
-                _newRecords.Add(uri);
+                _newRecords.Enqueue(uri);
             }
         }
 
-        public List<Uri> GetNews()
+        public bool HasNew
         {
-            var news = _newRecords;
+            get { return _newRecords.Count > 0; }
+        }
+        public Uri PopNew()
+        {
             lock (((ICollection)_newRecords).SyncRoot)
             {
-                _newRecords = new List<Uri>();
+                return _newRecords.Dequeue();
             }
-
-            return news;
         }
     }
 }

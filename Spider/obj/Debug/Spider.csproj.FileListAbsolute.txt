@@ -10,3 +10,4 @@ G:\zlt\git\GetCHM\Spider\obj\Debug\Spider.pdb
 G:\zlt\git\GetCHM\Spider\bin\Debug\HtmlAgilityPack.dll
 G:\zlt\git\GetCHM\Spider\bin\Debug\HtmlAgilityPack.pdb
 G:\zlt\git\GetCHM\Spider\bin\Debug\HtmlAgilityPack.xml
+G:\zlt\git\GetCHM\Spider\obj\Debug\Spider.csprojResolveAssemblyReference.cache

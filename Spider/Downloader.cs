@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace Spider
         public Downloader()
         {
             _registry = Registry.Instance;
-            FilePath = @"D:\";
+            FilePath = @"D:\GetCHM\tem\";
             ElementQueries = new List<ElementQuery>()
             {
                 new ElementQuery() {Query = "//a", AttributeName = "href"},
@@ -31,46 +32,52 @@ namespace Spider
 
         public void Start()
         {
-            List<Uri> urilList = _registry.GetNews();
-            while (urilList.Count > 0)
+            while (true)
             {
-                try
+                var taskQueue = new Queue<Task>();
+                Task t;
+                while (_registry.HasNew)
                 {
-                    Parallel.ForEach(urilList, async (uri) =>
+                    var url = _registry.PopNew();
+                    t = FetchAsync(url);
+
+                    taskQueue.Enqueue(t);
+                }
+                if (taskQueue.Count <= 0)
+                {
+                    break;
+                }
+
+                t = taskQueue.Dequeue();
+                t.Wait(5000);
+            }
+        }
+
+        private async Task FetchAsync(Uri uri)
+        {
+            HttpWebRequest hwr = WebRequest.CreateHttp(uri);
+            using (var res = await hwr.GetResponseAsync())
+            {
+                if (Filter(res))
+                {
+                    if (res.ContentType.Contains("text/html"))
                     {
-                        HttpWebRequest hwr = WebRequest.CreateHttp(uri);
-                        using (var res = await hwr.GetResponseAsync())
+                        var hDoc = new HtmlDocument();
+                        using (var resStream = res.GetResponseStream())
                         {
-                            if (Filter(res))
-                            {
-                                if (res.ContentType.Contains("text/html"))
-                                {
-                                    var hDoc = new HtmlDocument();
-                                    using (var resStream = res.GetResponseStream())
-                                    {
-                                        hDoc.Load(resStream);
-                                    }
-                                    ReplaceUrl(hDoc, uri);
-                                    hDoc.Save(Path.Combine(FilePath, uri.GetHashCode().ToString()));
-                                }
-                                else
-                                {
-                                    using (var fs = File.OpenWrite(FilePath + uri.GetHashCode().ToString()))
-                                    {
-                                        await res.GetResponseStream().CopyToAsync(fs);
-                                    }
-                                }
-                            }
+                            hDoc.Load(resStream);
                         }
-                    });
+                        ReplaceUrl(hDoc, uri);
+                        hDoc.Save(Path.Combine(FilePath, uri.GetHashCode().ToString()));
+                    }
+                    else
+                    {
+                        using (var fs = File.OpenWrite(FilePath + uri.GetHashCode().ToString()))
+                        {
+                            await res.GetResponseStream().CopyToAsync(fs);
+                        }
+                    }
                 }
-                catch (ArgumentNullException)
-                {
-                }
-                catch (AggregateException)
-                {
-                }
-                urilList = _registry.GetNews();
             }
         }
 
@@ -85,11 +92,23 @@ namespace Spider
                     continue;
                 foreach (var elem in elements)
                 {
-                    var url = elem.Attributes[elementQuery.AttributeName].Value;
+                    var urlAttr = elem.Attributes[elementQuery.AttributeName];
+                    if (urlAttr == null)
+                        continue;
+                    var url = urlAttr.Value;
                     if (FilterUrl(url))
                     {
                         var newUrl = new Uri(uri, url);
-                        elem.Attributes[elementQuery.AttributeName].Value = newUrl.GetHashCode() + url.Substring(url.IndexOf('#'));
+                        int index = url.IndexOf('#');
+                        if (index > -1)
+                        {
+                            elem.Attributes[elementQuery.AttributeName].Value = newUrl.GetHashCode() +
+                                                                                url.Substring(index);
+                        }
+                        else
+                        {
+                            elem.Attributes[elementQuery.AttributeName].Value = newUrl.GetHashCode().ToString();
+                        }
                         _registry.Add(newUrl);
                     }
                 }
@@ -109,7 +128,21 @@ namespace Spider
             throw new NotImplementedException();
         }
 
-        public string FilePath { get; set; }
+        private string _fileName;
+
+        public string FilePath
+        {
+            get { return _fileName; }
+
+            set
+            {
+                if (!Directory.Exists(value))
+                {
+                    Directory.CreateDirectory(value);
+                }
+                _fileName = value;
+            }
+        }
     }
 
     public delegate bool Filter(WebResponse res);
