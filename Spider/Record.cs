@@ -1,37 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spider
 {
-    class Record
+    public class Record
     {
+        public Record(string fileName)
+        {
+            FileName = fileName;
+        }
         public Uri Uri { get; set; }
-        public string Path { get; set; }
-        public State State { get; set; }
-        public FileType FileType { get; set; }
+        public string FileName { get; private set; }
 
         public override int GetHashCode()
         {
             return Uri.GetHashCode();
         }
-    }
 
-    enum State
-    {
-        New,
-        Downloading,
-        Downloadead,
-        Parsing,
-        Parsed
-    }
-    enum FileType
-    {
-        Html,
-        JavaScript,
-        Image,
-        File
+        public override bool Equals(object obj)
+        {
+            var record = obj as Record;
+            if (record == null) return false;
+
+            if (Uri.Equals(record.Uri))
+            {
+                record.FileName = FileName;
+                return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,9 @@ namespace Test
         [TestMethod]
         public void TestStart()
         {
-            Registry.Instance.Add(new Uri("http://www.jiangmiao.org/blog/2195.html"));
+            var record = Registry.Instance.Add(new Uri("http://www.jiangmiao.org/blog/"), ".html", "Index");
+
+            Console.WriteLine(record.FileName);
             Downloader downloader = new Downloader();
             downloader.FilterUrl = url => url.StartsWith("http://www.jiangmiao.org");
             downloader.Start();
@@ -85,6 +88,12 @@ namespace Test
                     list.Add(i + 1);
                 }
             }
+        }
+
+        [TestMethod]
+        public void TestOther()
+        {
+            Console.WriteLine(1.ToString(CultureInfo.InvariantCulture));
         }
     }
 }

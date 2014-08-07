@@ -5,8 +5,9 @@ namespace Spider
 {
     public interface IRegistry
     {
-        void Add(Uri uri);
+        //Record Add(Uri uri);
+        Record Add(Uri uri, string suffix = null, string fileName = null);
         bool HasNew { get; }
-        Uri PopNew();
+        Record PopNew();
     }
 }

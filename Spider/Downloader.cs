@@ -21,8 +21,10 @@ namespace Spider
             FilePath = @"D:\GetCHM\tem\";
             ElementQueries = new List<ElementQuery>()
             {
-                new ElementQuery() {Query = "//a", AttributeName = "href"},
-                new ElementQuery() {Query = "//img", AttributeName = "src"}
+                new ElementQuery() {Query = "//a", AttributeName = "href", Suffix = ".html"},
+                new ElementQuery() {Query = "//img", AttributeName = "src"},
+                new ElementQuery() {Query = @"//script[@type='text/javascript']", AttributeName = "src", Suffix = ".js"},
+                new ElementQuery() {Query = @"//link[@rel='stylesheet']", AttributeName = "href", Suffix = ".css"}
             };
         }
         public Downloader(IRegistry registry)
@@ -38,8 +40,8 @@ namespace Spider
                 Task t;
                 while (_registry.HasNew)
                 {
-                    var url = _registry.PopNew();
-                    t = FetchAsync(url);
+                    var record = _registry.PopNew();
+                    t = FetchAsync(record);
 
                     taskQueue.Enqueue(t);
                 }
@@ -53,9 +55,11 @@ namespace Spider
             }
         }
 
-        private async Task FetchAsync(Uri uri)
+        private async Task FetchAsync(Record record)
         {
-            HttpWebRequest hwr = WebRequest.CreateHttp(uri);
+            HttpWebRequest hwr = WebRequest.CreateHttp(record.Uri);
+            hwr.Headers[HttpRequestHeader.AcceptEncoding] = "gzip,deflate";
+            hwr.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             using (var res = await hwr.GetResponseAsync())
             {
                 if (Filter(res))
@@ -65,16 +69,17 @@ namespace Spider
                         var hDoc = new HtmlDocument();
                         using (var resStream = res.GetResponseStream())
                         {
-                            hDoc.Load(resStream);
+                            hDoc.Load(resStream, Encoding.UTF8);
                         }
-                        ReplaceUrl(hDoc, uri);
-                        hDoc.Save(Path.Combine(FilePath, uri.GetHashCode().ToString()));
+                        ReplaceUrl(hDoc, record.Uri);
+                        hDoc.Save(Path.Combine(FilePath, record.FileName));
                     }
                     else
                     {
-                        using (var fs = File.OpenWrite(FilePath + uri.GetHashCode().ToString()))
+                        using (var fs = File.OpenWrite(FilePath + record.FileName))
                         {
-                            await res.GetResponseStream().CopyToAsync(fs);
+                            var responseStream = res.GetResponseStream();
+                            if (responseStream != null) await responseStream.CopyToAsync(fs);
                         }
                     }
                 }
@@ -98,20 +103,31 @@ namespace Spider
                     var url = urlAttr.Value;
                     if (FilterUrl(url))
                     {
+                        string suffix = string.IsNullOrWhiteSpace(elementQuery.Suffix) ? GetSuffixFromUrl(url) : elementQuery.Suffix;
                         var newUrl = new Uri(uri, url);
+                        var record = _registry.Add(newUrl, suffix);
                         int index = url.IndexOf('#');
-                        if (index > -1)
-                        {
-                            elem.Attributes[elementQuery.AttributeName].Value = newUrl.GetHashCode() +
-                                                                                url.Substring(index);
-                        }
-                        else
-                        {
-                            elem.Attributes[elementQuery.AttributeName].Value = newUrl.GetHashCode().ToString();
-                        }
-                        _registry.Add(newUrl);
+                        elem.Attributes[elementQuery.AttributeName].Value = index > -1
+                            ? record.FileName +
+                              url.Substring(index)
+                            : record.FileName;
                     }
                 }
+            }
+        }
+
+        private string GetSuffixFromUrl(string url)
+        {
+            int queryIndex = url.IndexOf('?');
+            if (queryIndex > -1)
+            {
+                int suffixIndex = url.LastIndexOf('.', queryIndex);
+                return suffixIndex > -1 ? url.Substring(suffixIndex, queryIndex - suffixIndex) : null;
+            }
+            else
+            {
+                int suffixIndex = url.LastIndexOf('.');
+                return suffixIndex > -1 ? url.Substring(suffixIndex) : null;
             }
         }
 

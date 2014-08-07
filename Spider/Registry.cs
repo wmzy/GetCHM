@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Spider
 {
     public sealed class Registry : IRegistry
     {
-        private readonly HashSet<Uri> _records;
-        private Queue<Uri> _newRecords = new Queue<Uri>();
+        private readonly HashSet<Record> _records;
+        private readonly Queue<Record> _newRecords = new Queue<Record>();
 
         Registry()
         {
-            _records = new HashSet<Uri>();
+            _records = new HashSet<Record>();
         }
         public static Registry Instance
         {
@@ -33,26 +34,50 @@ namespace Spider
             internal static readonly Registry Instance = new Registry();
         }
 
-        public void Add(Uri uri)
+        //public Record Add(Uri uri)
+        //{
+        //    Record record;
+        //    lock (_records)
+        //    {
+        //        record = new Record(_records.Count.ToString()) { Uri = uri};
+        //        if (_records.Contains(record)) return record;
+
+        //        _records.Add(record);
+        //    }
+
+        //    lock (((ICollection)_newRecords).SyncRoot)
+        //    {
+        //        _newRecords.Enqueue(record);
+        //    }
+
+        //    return record;
+        //}
+
+
+        public Record Add(Uri uri, string suffix = null, string fileName = null)
         {
+            Record record;
             lock (_records)
             {
-                if (_records.Contains(uri)) return;
+                record = string.IsNullOrWhiteSpace(fileName) ? new Record(_records.Count + suffix) : new Record(fileName + suffix);
+                record.Uri = uri;
+                if (_records.Contains(record)) return record;
 
-                _records.Add(uri);
+                _records.Add(record);
             }
 
             lock (((ICollection)_newRecords).SyncRoot)
             {
-                _newRecords.Enqueue(uri);
+                _newRecords.Enqueue(record);
             }
+            return record; 
         }
 
         public bool HasNew
         {
             get { return _newRecords.Count > 0; }
         }
-        public Uri PopNew()
+        public Record PopNew()
         {
             lock (((ICollection)_newRecords).SyncRoot)
             {
