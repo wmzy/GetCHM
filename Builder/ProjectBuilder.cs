@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace Builder
 {
-    class ProjectBuilder
+    public class ProjectBuilder
     {
+        public ProjectBuilder()
+        {
+            
+        }
+
     }
 }

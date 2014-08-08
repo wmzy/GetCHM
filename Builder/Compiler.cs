@@ -4,6 +4,10 @@ namespace Builder
 {
     public class Compiler
     {
+        public Compiler(string fileName)
+        {
+            FileName = fileName;
+        }
         public string FileName { get; set; }
         public string CompileInfo { get; private set; }
         public string ProgreassInfo { get; private set; }
