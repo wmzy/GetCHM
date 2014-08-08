@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD>
+
+<body>
+    <object type="text/site properties">
+        <param name="ImageType" value="Folder">
+    </object>
+    <!--树形begin -->
+    <ul>
+        <!--第一层begin -->
+        <li>
+            <object type="text/sitemap">
+                <param name="Name" value="CentOS 配置详解"> <!--结点名称 -->
+                <param name="Local" value="make.html">
+            </object>
+        <li>
+            <object type="text/sitemap">
+                <param name="Name" value="操作系统的安装"> <!--结点名称 -->
+            </object>
+            <ul>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="CentOS 4.4 的下载、安装">
+                        <param name="Local" value="make/install.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="系统安装后的初始环境设置">
+                        <param name="Local" value="make/newenv.html">
+                    </object>
+            </ul>
+        <li>
+            <object type="text/sitemap">
+                <param name="Name" value="SSH服务器的构建"> <!--结点名称 -->
+            </object>
+            <ul>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="用OpenSSH构建SSH服务器">
+                        <param name="Local" value="make/sshd.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="用SSH客户端软件登录到服务器">
+                        <param name="Local" value="make/sshcl.html">
+                    </object>
+            </ul>
+
+        <li>
+            <object type="text/sitemap">
+                <param name="Name" value="服务器开放前安全监测系统和病毒查杀系统的构建">
+            </object>
+            <ul>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="数据完整性监测系统的构建（ Tripwire ）">
+                        <param name="Local" value="make/tripwire.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="入侵监测系统的构建（ chkrootkit ）">
+                        <param name="Local" value="make/chkrootkit.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="病毒查杀系统的构建（ Clam AntiVirus ）">
+                        <param name="Local" value="make/antivirus.html">
+                    </object>
+            </ul>
+        <li>
+            <object type="text/sitemap">
+                <param name="Name" value="面向局域网外的动态域名的申请">
+            </object>
+            <ul>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="动态域名的申请（no-ip.com）">
+                        <param name="Local" value="make/freedomain.html">
+                    </object>
+            </ul>
+
+        <li>
+            <object type="text/sitemap">
+                <param name="Name" value="HTTP服务器的构建以及相关扩展功能的开通">
+            </object>
+            <ul>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="用 Apache 构建 HTTP 服务器">
+                        <param name="Local" value="make/apache.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="让服务器支持安全 HTTP 协议（ HTTPS ）">
+                        <param name="Local" value="make/ssl.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="开放一般用户的网页发布权限">
+                        <param name="Local" value="make/userdirectory.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="虚拟主机的构建">
+                        <param name="Local" value="make/virtualhost.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="Servlet/JSP服务器的构建（Tomcat5）">
+                        <param name="Local" value="make/servlet.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="基于日志的站点统计系统的构建（ Awstats ）">
+                        <param name="Local" value="make/awstats.html">
+                    </object>
+            </ul>
+        <li>
+            <object type="text/sitemap">
+                <param name="Name" value="数据库服务器的构建">
+            </object>
+            <ul>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="构建 MySQL 数据库服务器">
+                        <param name="Local" value="make/mysql.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="用 phpMyAdmin 让 MySQL 数据库管理温和化">
+                        <param name="Local" value="make/phpmyadmin.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="数据库的自动备份与数据库被破坏后的恢复（ mysqlhotcopy ）">
+                        <param name="Local" value="make/mysqlbackup.html">
+                    </object>
+            </ul>
+        <li>
+            <object type="text/sitemap">
+                <param name="Name" value="FTP服务器的构建"> <!--结点名称 -->
+            </object>
+            <ul>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="用 ProFTPD 构建 FTP 服务器">
+                        <param name="Local" value="make/proftpd.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="用 FTP 客户端软件连接到服务器">
+                        <param name="Local" value="make/smartftp.html">
+                    </object>
+            </ul>
+        <li>
+            <object type="text/sitemap">
+                <param name="Name" value="文件服务器的构建"> <!--结点名称 -->
+            </object>
+            <ul>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="Samba 服务器的构建">
+                        <param name="Local" value="make/samba.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="用 SWAT 让 Samba 服务器的管理温和化">
+                        <param name="Local" value="make/swat.html">
+                    </object>
+            </ul>
+        <li>
+            <object type="text/sitemap">
+                <param name="Name" value="邮件服务器的构建"> <!--结点名称 -->
+            </object>
+            <ul>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="SMTP 服务器的构建	（ Postfix ）">
+                        <param name="Local" value="make/postfix_smtp.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="POP / IMAP 服务器的构建（ Dovecot ）">
+                        <param name="Local" value="make/dovecot_pop3.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="让邮件服务器支持虚拟域名">
+                        <param name="Local" value="make/postfix_vd.html">
+                    </object>
+                <li>
+                    <object type="text/sitemap">
+                        <param name="Name" value="用 SSL 对邮件加密的支持">
+                        <param name="Local" value="make/postfix_ssl.html">
+                    </object>
+            </ul>
+    </ul><!--第一层end -->
+    <!--树形end -->
+</body>
+</HTML>
