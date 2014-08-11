@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Spider
 {
@@ -34,26 +35,6 @@ namespace Spider
             internal static readonly Registry Instance = new Registry();
         }
 
-        //public Record Add(Uri uri)
-        //{
-        //    Record record;
-        //    lock (_records)
-        //    {
-        //        record = new Record(_records.Count.ToString()) { Uri = uri};
-        //        if (_records.Contains(record)) return record;
-
-        //        _records.Add(record);
-        //    }
-
-        //    lock (((ICollection)_newRecords).SyncRoot)
-        //    {
-        //        _newRecords.Enqueue(record);
-        //    }
-
-        //    return record;
-        //}
-
-
         public Record Add(Uri uri, string suffix = null, string fileName = null)
         {
             Record record;
@@ -61,7 +42,7 @@ namespace Spider
             {
                 record = string.IsNullOrWhiteSpace(fileName) ? new Record(_records.Count + suffix) : new Record(fileName + suffix);
                 record.Uri = uri;
-                if (_records.Contains(record)) return record;
+                if (_records.Contains(record)) return record.InstanceInHashSet;
 
                 _records.Add(record);
             }
@@ -83,6 +64,17 @@ namespace Spider
             {
                 return _newRecords.Dequeue();
             }
+        }
+
+
+        public Record FindByUri(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Record> Records
+        {
+            get { return _records.ToArray(); }
         }
     }
 }

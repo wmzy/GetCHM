@@ -50,10 +50,16 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="TestBuilder.cs" />
     <Compile Include="TestDownloader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestRun.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Builder\Builder.csproj">
+      <Project>{f773814e-d39f-4ea7-b14c-a447d1db1232}</Project>
+      <Name>Builder</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Spider\Spider.csproj">
       <Project>{837156d8-df8f-4cfe-9e0f-bb830bf033c5}</Project>
       <Name>Spider</Name>

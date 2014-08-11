@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Spider
 {
@@ -10,6 +11,8 @@ namespace Spider
         }
         public Uri Uri { get; set; }
         public string FileName { get; private set; }
+        public string Title { get; set; }
+        public Record InstanceInHashSet { get; private set; }
 
         public override int GetHashCode()
         {
@@ -23,7 +26,7 @@ namespace Spider
 
             if (Uri.Equals(record.Uri))
             {
-                record.FileName = FileName;
+                record.InstanceInHashSet = this;
                 return true;
             }
 

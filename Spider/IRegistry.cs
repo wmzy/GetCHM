@@ -9,5 +9,7 @@ namespace Spider
         Record Add(Uri uri, string suffix = null, string fileName = null);
         bool HasNew { get; }
         Record PopNew();
+        Record FindByUri(Uri uri);
+        IEnumerable<Record> Records { get; } 
     }
 }

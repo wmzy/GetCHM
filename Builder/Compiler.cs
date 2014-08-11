@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Builder
 {
@@ -18,6 +19,7 @@ namespace Builder
         public bool GetCompileInfoCall(string info)
         {
             CompileInfo = info;
+            Console.WriteLine("ccccc" + info);
             return true;
         }
 
@@ -25,6 +27,7 @@ namespace Builder
         public bool GetProgreassInfoCall(string info)
         {
             ProgreassInfo = info;
+            Console.WriteLine("pppppp" + info);
             return true;
         }
 

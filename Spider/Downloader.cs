@@ -60,30 +60,44 @@ namespace Spider
             HttpWebRequest hwr = WebRequest.CreateHttp(record.Uri);
             hwr.Headers[HttpRequestHeader.AcceptEncoding] = "gzip,deflate";
             hwr.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            using (var res = await hwr.GetResponseAsync())
+            try
             {
-                if (Filter(res))
+                using (var res = await hwr.GetResponseAsync())
                 {
-                    if (res.ContentType.Contains("text/html"))
+                    if (Filter(res))
                     {
-                        var hDoc = new HtmlDocument();
-                        using (var resStream = res.GetResponseStream())
+                        if (res.ContentType.Contains("text/html"))
                         {
-                            hDoc.Load(resStream, Encoding.UTF8);
+                            var hDoc = new HtmlDocument();
+                            using (var resStream = res.GetResponseStream())
+                            {
+                                hDoc.Load(resStream, Encoding.GetEncoding(((HttpWebResponse)res).ContentEncoding));
+                            }
+                            record.Title = GetTitle(hDoc);
+                            ReplaceUrl(hDoc, record.Uri);
+                            hDoc.Save(Path.Combine(FilePath, record.FileName));
                         }
-                        ReplaceUrl(hDoc, record.Uri);
-                        hDoc.Save(Path.Combine(FilePath, record.FileName));
-                    }
-                    else
-                    {
-                        using (var fs = File.OpenWrite(FilePath + record.FileName))
+                        else
                         {
-                            var responseStream = res.GetResponseStream();
-                            if (responseStream != null) await responseStream.CopyToAsync(fs);
+                            using (var fs = File.OpenWrite(FilePath + record.FileName))
+                            {
+                                var responseStream = res.GetResponseStream();
+                                if (responseStream != null) await responseStream.CopyToAsync(fs);
+                            }
                         }
                     }
                 }
             }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+            }
+        }
+
+        private string GetTitle(HtmlDocument htmlDocument)
+        {
+            var elem = htmlDocument.DocumentNode.SelectSingleNode("/html/title");
+            return elem == null ? null : elem.InnerText;
         }
 
         public List<ElementQuery> ElementQueries { get; set; }
