@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace Spider
@@ -69,12 +68,13 @@ namespace Spider
 
         public Record FindByUri(Uri uri)
         {
-            throw new NotImplementedException();
+            var record = new Record(null) {Uri = uri};
+            return _records.Contains(record) ? record.InstanceInHashSet : null;
         }
 
         public IEnumerable<Record> Records
         {
-            get { return _records.ToArray(); }
+            get { return _records.AsEnumerable(); }
         }
     }
 }

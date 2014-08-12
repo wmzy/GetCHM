@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -28,13 +29,12 @@ namespace Test
             Console.WriteLine(new Uri("http://baidu.com/indes.html").GetHashCode());
             Console.WriteLine(new Uri("http://baidu.com").GetHashCode());
             Console.WriteLine(new Uri("http://baidu.com/s").GetHashCode());
-            Console.WriteLine(new Uri("http://baidu.com/").AbsoluteUri);
+            Console.WriteLine(new Uri("http://baidu.com/s/").AbsoluteUri);
             Console.WriteLine(new Uri("http://baidu.com/#s").AbsoluteUri);
             Console.WriteLine(new Uri("http://baidu.com/#s").Equals(new Uri("http://baidu.com/")));
             Console.WriteLine(new Uri(new Uri("http://baidu.com/"), "http://bai.com/"));
-            var q = new Queue<int>();
-            q.Enqueue(1);
-            q.Dequeue();
+            Console.WriteLine(new Uri("http://baidu.com/s/").GetHashCode());
+            Console.WriteLine(new Uri("http://baidu.com/s").GetHashCode());
         }
 
         [TestMethod]
@@ -91,6 +91,15 @@ namespace Test
         public void TestOther()
         {
             Console.WriteLine(1.ToString(CultureInfo.InvariantCulture));
+        }
+
+        [TestMethod]
+        public void TestPath()
+        {
+            string s = @"";
+            var t = s.Split('\n');
+            foreach (var ss in t)
+            { }
         }
     }
 
