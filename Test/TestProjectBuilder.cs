@@ -17,7 +17,7 @@ namespace Test
         }
 
         [TestMethod]
-        public void TestBuildHhcByRegistry()
+        public void TestBuildHhcByUrl()
         {
             var record = Registry.Instance.Add(new Uri("http://www.jiangmiao.org/blog/"), ".html", "Index");
 
@@ -26,7 +26,7 @@ namespace Test
             downloader.FilterUrl = url => url.StartsWith("http://www.jiangmiao.org");
             downloader.Start();
             var builder = new ProjectBuilder(Registry.Instance);
-            builder.BuildHhcByRegistry();
+            builder.BuildHhcByUrl();
         }
     }
 }

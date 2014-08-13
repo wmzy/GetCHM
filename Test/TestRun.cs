@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WMZY.Util;
 
 namespace Test
 {
@@ -100,6 +101,13 @@ namespace Test
             var t = s.Split('\n');
             foreach (var ss in t)
             { }
+        }
+
+        [TestMethod]
+        public void TestNull()
+        {
+            string s = null;
+            Console.WriteLine(s.NullOrEmptyDefault("sss"));
         }
     }
 

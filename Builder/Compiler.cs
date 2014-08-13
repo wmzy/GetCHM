@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Builder
 {
@@ -8,17 +9,19 @@ namespace Builder
         public Compiler(string fileName)
         {
             FileName = fileName;
+            CompileInfo = new StringBuilder();
+            ProgreassInfo = new StringBuilder();
         }
         public string FileName { get; set; }
-        public string CompileInfo { get; private set; }
-        public string ProgreassInfo { get; private set; }
+        public StringBuilder CompileInfo { get; private set; }
+        public StringBuilder ProgreassInfo { get; private set; }
 
         delegate bool GetInfoCall(string info);
 
         //编译信息
         public bool GetCompileInfoCall(string info)
         {
-            CompileInfo = info;
+            CompileInfo.AppendLine(info);
             Console.WriteLine("ccccc" + info);
             return true;
         }
@@ -26,7 +29,7 @@ namespace Builder
         //进度信息
         public bool GetProgreassInfoCall(string info)
         {
-            ProgreassInfo = info;
+            ProgreassInfo.AppendLine(info);
             Console.WriteLine("pppppp" + info);
             return true;
         }

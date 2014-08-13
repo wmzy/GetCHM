@@ -64,6 +64,10 @@
       <Project>{837156d8-df8f-4cfe-9e0f-bb830bf033c5}</Project>
       <Name>Spider</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WMZY.Util\WMZY.Util.csproj">
+      <Project>{c019dc63-40e6-4c6c-8030-5ac05336a67e}</Project>
+      <Name>WMZY.Util</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
