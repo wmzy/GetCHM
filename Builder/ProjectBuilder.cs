@@ -23,8 +23,6 @@ namespace Builder
         public string HtmlFilePath { get; set; }
         public string ProjectPath { get; set; }
         public string HhpFileName { get; set; }
-        public string HhcFileName { get; set; }
-        public string HhkFileName { get; set; }
         public HhpOptions HhpOptions { get; set; }
 
         public string BuildHhcByUrl()
