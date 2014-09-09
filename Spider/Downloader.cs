@@ -509,7 +509,7 @@ namespace Spider
             }
         }
 
-        private async Task FetchAsync(Record record)
+        private async Task FetchAsync(Resource record)
         {
             HttpWebRequest hwr = WebRequest.CreateHttp(record.Uri);
             hwr.Headers[HttpRequestHeader.AcceptEncoding] = "gzip,deflate";

@@ -6,10 +6,10 @@ namespace Spider
     public interface IRegistry
     {
         //Record Add(Uri uri);
-        Record Add(Uri uri, string suffix = null, string fileName = null);
+        Resource Add(Uri uri, string suffix = null, string fileName = null);
         bool HasNew { get; }
-        Record PopNew();
-        Record FindByUri(Uri uri);
-        IEnumerable<Record> Records { get; } 
+        Resource PopNew();
+        Resource FindByUri(Uri uri);
+        IEnumerable<Resource> Records { get; } 
     }
 }

@@ -7,12 +7,12 @@ namespace Spider
 {
     public sealed class Registry : IRegistry
     {
-        private readonly HashSet<Record> _records;
-        private readonly Queue<Record> _newRecords = new Queue<Record>();
+        private readonly HashSet<Resource> _records;
+        private readonly Queue<Resource> _newRecords = new Queue<Resource>();
 
         Registry()
         {
-            _records = new HashSet<Record>();
+            _records = new HashSet<Resource>();
         }
         public static Registry Instance
         {
@@ -34,12 +34,12 @@ namespace Spider
             internal static readonly Registry Instance = new Registry();
         }
 
-        public Record Add(Uri uri, string suffix = null, string fileName = null)
+        public Resource Add(Uri uri, string suffix = null, string fileName = null)
         {
-            Record record;
+            Resource record;
             lock (_records)
             {
-                record = string.IsNullOrWhiteSpace(fileName) ? new Record(_records.Count + suffix) : new Record(fileName + suffix);
+                record = string.IsNullOrWhiteSpace(fileName) ? new Resource(_records.Count + suffix) : new Resource(fileName + suffix);
                 record.Uri = uri;
                 if (_records.Contains(record)) return record.InstanceInHashSet;
 
@@ -57,7 +57,7 @@ namespace Spider
         {
             get { return _newRecords.Count > 0; }
         }
-        public Record PopNew()
+        public Resource PopNew()
         {
             lock (((ICollection)_newRecords).SyncRoot)
             {
@@ -66,13 +66,13 @@ namespace Spider
         }
 
 
-        public Record FindByUri(Uri uri)
+        public Resource FindByUri(Uri uri)
         {
-            var record = new Record(null) {Uri = uri};
+            var record = new Resource(null) {Uri = uri};
             return _records.Contains(record) ? record.InstanceInHashSet : null;
         }
 
-        public IEnumerable<Record> Records
+        public IEnumerable<Resource> Records
         {
             get { return _records.AsEnumerable(); }
         }

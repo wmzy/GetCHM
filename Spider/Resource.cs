@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace Spider
 {
-    public class Record
+    public class Resource
     {
-        public Record(string fileName)
+        public Resource(string fileName)
         {
             FileName = fileName;
         }
         public Uri Uri { get; set; }
         public string FileName { get; private set; }
         public string Title { get; set; }
-        public Record InstanceInHashSet { get; private set; }
+        public Resource InstanceInHashSet { get; private set; }
 
         public override int GetHashCode()
         {
@@ -21,7 +21,7 @@ namespace Spider
 
         public override bool Equals(object obj)
         {
-            var record = obj as Record;
+            var record = obj as Resource;
             if (record == null) return false;
 
             if (Uri.Equals(record.Uri))
