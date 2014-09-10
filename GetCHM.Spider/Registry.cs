@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Spider
+namespace GetCHM.Spider
 {
     public sealed class Registry : IRegistry
     {

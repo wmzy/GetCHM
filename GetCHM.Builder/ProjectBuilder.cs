@@ -2,10 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Spider;
+using GetCHM.Spider;
 using WMZY.Util;
 
-namespace Builder
+namespace GetCHM.Builder
 {
     public class ProjectBuilder
     {

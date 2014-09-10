@@ -1,7 +1,7 @@
 ﻿using System;
-using Builder;
+using GetCHM.Builder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Spider;
+using GetCHM.Spider;
 
 
 namespace Test

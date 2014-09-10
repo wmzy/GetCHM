@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Spider
+namespace GetCHM.Spider
 {
     public static class SHA1Util
     {

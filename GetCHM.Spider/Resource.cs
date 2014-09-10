@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Spider
+namespace GetCHM.Spider
 {
     public class Resource
     {

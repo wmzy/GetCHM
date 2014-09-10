@@ -10,7 +10,7 @@ using System.Net;
 using HtmlAgilityPack;
 using WMZY.Util;
 
-namespace Spider
+namespace GetCHM.Spider
 {
     public class Downloader : IDownloader
     {

@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Builder
+namespace GetCHM.Builder
 {
     public class Compiler
     {
@@ -53,7 +53,7 @@ namespace Builder
         }
         public static void Compile(string fileName)
         {
-            CompileHHP(fileName, (info) => true, (info) => true, 0);
+            CompileHHP(fileName, info => true, info => true, 0);
         }
         public static void Compile(string fileName, GetInfoCall getCompileInfoCall, GetInfoCall getProgreassInfoCall)
         {

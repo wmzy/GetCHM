@@ -56,13 +56,13 @@
     <Compile Include="TestRun.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Builder\Builder.csproj">
+    <ProjectReference Include="..\GetCHM.Builder\GetCHM.Builder.csproj">
       <Project>{f773814e-d39f-4ea7-b14c-a447d1db1232}</Project>
-      <Name>Builder</Name>
+      <Name>GetCHM.Builder</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Spider\Spider.csproj">
+    <ProjectReference Include="..\GetCHM.Spider\GetCHM.Spider.csproj">
       <Project>{837156d8-df8f-4cfe-9e0f-bb830bf033c5}</Project>
-      <Name>Spider</Name>
+      <Name>GetCHM.Spider</Name>
     </ProjectReference>
     <ProjectReference Include="..\WMZY.Util\WMZY.Util.csproj">
       <Project>{c019dc63-40e6-4c6c-8030-5ac05336a67e}</Project>
