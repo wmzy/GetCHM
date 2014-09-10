@@ -10,6 +10,6 @@ namespace Spider
         bool HasNew { get; }
         Resource PopNew();
         Resource FindByUri(Uri uri);
-        IEnumerable<Resource> Records { get; } 
+        IEnumerable<Resource> Records { get; }
     }
 }
