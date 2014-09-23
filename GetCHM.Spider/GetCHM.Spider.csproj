@@ -7,8 +7,8 @@
     <ProjectGuid>{837156D8-DF8F-4CFE-9E0F-BB830BF033C5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Spider</RootNamespace>
-    <AssemblyName>Spider</AssemblyName>
+    <RootNamespace>GetCHM.Spider</RootNamespace>
+    <AssemblyName>GetCHM.Spider</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -46,6 +46,7 @@
     <Compile Include="ElementQuery.cs" />
     <Compile Include="IDownloader.cs" />
     <Compile Include="IRegistry.cs" />
+    <Compile Include="PerFetchEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Registry.cs" />

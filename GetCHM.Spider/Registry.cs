@@ -7,12 +7,12 @@ namespace GetCHM.Spider
 {
     public sealed class Registry : IRegistry
     {
-        private readonly HashSet<Resource> _records;
+        private readonly HashSet<Resource> _resources;
         private readonly Queue<Resource> _newRecords = new Queue<Resource>();
 
         Registry()
         {
-            _records = new HashSet<Resource>();
+            _resources = new HashSet<Resource>();
         }
         public static Registry Instance
         {
@@ -26,9 +26,7 @@ namespace GetCHM.Spider
         {
             // Explicit static constructor to tell C# compiler
             // not to mark type as beforefieldinit
-            static DelayConstructor()
-            {
-            }
+            static DelayConstructor() { }
 
 // ReSharper disable once MemberHidesStaticFromOuterClass
             internal static readonly Registry Instance = new Registry();
@@ -36,21 +34,21 @@ namespace GetCHM.Spider
 
         public Resource Add(Uri uri, string suffix = null, string fileName = null)
         {
-            Resource record;
-            lock (_records)
+            Resource resource;
+            lock (_resources)
             {
-                record = string.IsNullOrWhiteSpace(fileName) ? new Resource(_records.Count + suffix) : new Resource(fileName + suffix);
-                record.Uri = uri;
-                if (_records.Contains(record)) return record.InstanceInHashSet;
+                resource = string.IsNullOrWhiteSpace(fileName) ? new Resource(_resources.Count + suffix) : new Resource(fileName + suffix);
+                resource.Uri = uri;
+                if (_resources.Contains(resource)) return resource.InstanceInHashSet;
 
-                _records.Add(record);
+                _resources.Add(resource);
             }
 
             lock (((ICollection)_newRecords).SyncRoot)
             {
-                _newRecords.Enqueue(record);
+                _newRecords.Enqueue(resource);
             }
-            return record; 
+            return resource;
         }
 
         public bool HasNew
@@ -69,12 +67,12 @@ namespace GetCHM.Spider
         public Resource FindByUri(Uri uri)
         {
             var record = new Resource(null) {Uri = uri};
-            return _records.Contains(record) ? record.InstanceInHashSet : null;
+            return _resources.Contains(record) ? record.InstanceInHashSet : null;
         }
 
         public IEnumerable<Resource> Records
         {
-            get { return _records.AsEnumerable(); }
+            get { return _resources.AsEnumerable(); }
         }
     }
 }

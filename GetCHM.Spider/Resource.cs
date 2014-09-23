@@ -8,10 +8,12 @@ namespace GetCHM.Spider
         public Resource(string fileName)
         {
             FileName = fileName;
+            Depth = -1;
         }
         public Uri Uri { get; set; }
         public string FileName { get; private set; }
         public string Title { get; set; }
+        public int Depth { get; set; }
         public Resource InstanceInHashSet { get; private set; }
 
         public override int GetHashCode()

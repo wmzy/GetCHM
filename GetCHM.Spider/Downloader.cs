@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Net;
 using HtmlAgilityPack;
@@ -15,12 +12,21 @@ namespace GetCHM.Spider
     public class Downloader : IDownloader
     {
         private readonly IRegistry _registry;
+        public event EventHandler<PerFetchEventArgs> PerFetch;
+
+        protected virtual void OnPerFetch(PerFetchEventArgs e)
+        {
+            EventHandler<PerFetchEventArgs> handler = PerFetch;
+            if (handler != null) handler(this, e);
+        }
+        #region .ctor
 
         public Downloader()
         {
             _registry = Registry.Instance;
-            FilePath = @"D:\GetCHM\tem\";
-            ElementQueries = new List<ElementQuery>()
+            // FilePath = @"D:\GetCHM\tem\";
+            MaxDepth = Int32.MaxValue;
+            ElementQueries = new List<ElementQuery>
             {
                 new ElementQuery {Query = "//a", AttributeName = "href", Suffix = ".html",IsAutoIdentifySuffix = true},
                 new ElementQuery {Query = "//img", AttributeName = "src", IsAutoIdentifySuffix = true},
@@ -30,7 +36,7 @@ namespace GetCHM.Spider
 
             SuffixMap = new Dictionary<string, string>
             {
-#region 文件名后缀
+                #region 文件名后缀
                 {".3dm", ""},
 				{".3dmf", ""},
 				{".a", ""},
@@ -478,13 +484,14 @@ namespace GetCHM.Spider
 				{".zoo", ""},
 				{".zsh", ""}
 
-	#endregion
+	            #endregion
             };
         }
         public Downloader(IRegistry registry)
         {
             _registry = registry;
-        }
+        } 
+        #endregion
 
         public void Start()
         {
@@ -494,8 +501,9 @@ namespace GetCHM.Spider
                 Task t;
                 while (_registry.HasNew)
                 {
-                    var record = _registry.PopNew();
-                    t = FetchAsync(record);
+                    var resource = _registry.PopNew();
+                    OnPerFetch(new PerFetchEventArgs(resource));
+                    t = FetchAsync(resource);
 
                     taskQueue.Enqueue(t);
                 }
@@ -509,9 +517,9 @@ namespace GetCHM.Spider
             }
         }
 
-        private async Task FetchAsync(Resource record)
+        private async Task FetchAsync(Resource resource)
         {
-            HttpWebRequest hwr = WebRequest.CreateHttp(record.Uri);
+            HttpWebRequest hwr = WebRequest.CreateHttp(resource.Uri);
             hwr.Headers[HttpRequestHeader.AcceptEncoding] = "gzip,deflate";
             hwr.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             try
@@ -520,20 +528,20 @@ namespace GetCHM.Spider
                 {
                     if (Filter(res))
                     {
-                        if (res.ContentType.Contains("text/html"))
+                        if (res.ContentType.Contains("text/html") && resource.Depth < MaxDepth)
                         {
                             var hDoc = new HtmlDocument();
                             using (var resStream = res.GetResponseStream())
                             {
                                 hDoc.Load(resStream, Encoding.UTF8);
                             }
-                            record.Title = GetTitle(hDoc);
-                            ReplaceUrl(hDoc, record.Uri);
-                            hDoc.Save(Path.Combine(FilePath, record.FileName));
+                            resource.Title = GetTitle(hDoc);
+                            ReplaceUrl(hDoc, resource.Uri, resource.Depth);
+                            hDoc.Save(Path.Combine(FilePath, resource.FileName));
                         }
                         else
                         {
-                            using (var fs = File.OpenWrite(FilePath + record.FileName))
+                            using (var fs = File.OpenWrite(Path.Combine(FilePath, resource.FileName)))
                             {
                                 var responseStream = res.GetResponseStream();
                                 if (responseStream != null) await responseStream.CopyToAsync(fs);
@@ -549,6 +557,8 @@ namespace GetCHM.Spider
             }
         }
 
+        public int MaxDepth { get; set; }
+
         private string GetTitle(HtmlDocument htmlDocument)
         {
             var elem = htmlDocument.DocumentNode.SelectSingleNode("/html/head/title");
@@ -557,7 +567,7 @@ namespace GetCHM.Spider
 
         public List<ElementQuery> ElementQueries { get; set; }
 
-        private void ReplaceUrl(HtmlDocument hDoc, Uri uri)
+        private void ReplaceUrl(HtmlDocument hDoc, Uri uri, int depth)
         {
             foreach (var elementQuery in ElementQueries)
             {
@@ -572,14 +582,21 @@ namespace GetCHM.Spider
                     var url = urlAttr.Value;
                     if (FilterUrl(url))
                     {
-                        string suffix = elementQuery.IsAutoIdentifySuffix ? GetSuffixFromUrl(url).NullOrWhiteSpaceDefault(elementQuery.Suffix) : elementQuery.Suffix;
                         var newUrl = new Uri(uri, url);
-                        var record = _registry.Add(newUrl, suffix);
+                        string suffix = elementQuery.IsAutoIdentifySuffix ? GetSuffixFromUrl(url).NullOrWhiteSpaceDefault(elementQuery.Suffix) : elementQuery.Suffix;
+                        var resource = _registry.Add(newUrl, suffix);
+                        if (resource.Depth != -1)
+                        {
+                            resource.Depth = Math.Min(depth + 1, resource.Depth);
+                            return;
+                        }
+
+                        resource.Depth = depth + 1;
                         int index = url.IndexOf('#');
                         elem.Attributes[elementQuery.AttributeName].Value = index > -1
-                            ? record.FileName +
+                            ? resource.FileName +
                               url.Substring(index)
-                            : record.FileName;
+                            : resource.FileName;
                     }
                 }
             }
@@ -587,8 +604,8 @@ namespace GetCHM.Spider
 
         private string GetSuffixFromUrl(string url)
         {
-            string suffix = null;
-            int lIndex = url.IndexOfAny(new char[] { '#', '?' });
+            string suffix;
+            int lIndex = url.IndexOfAny(new[] { '#', '?' });
             int rIndex;
             int suffixIndex;
             if (lIndex > -1)
