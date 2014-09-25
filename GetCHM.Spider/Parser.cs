@@ -2,15 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace GetCHM.Spider
 {
-    public enum State
+    class Parser
     {
-        New,
-        Fetched,
-        NotFound,
-        Parsed,
-        Saved
     }
 }

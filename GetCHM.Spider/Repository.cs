@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GetCHM.Spider
 {
     public sealed class Repository
     {
-        private readonly SortedDictionary<Uri, ResourceInfo> _resource = new SortedDictionary<Uri, ResourceInfo>(); 
+        private readonly Dictionary<Uri, ResourceInfo> _resource = new Dictionary<Uri, ResourceInfo>();
         private Repository()
         {
         }
@@ -32,7 +29,7 @@ namespace GetCHM.Spider
             get { return DelayConstructor.Instance; }
         }
 
-// ReSharper disable once ClassNeverInstantiated.Local
+        // ReSharper disable once ClassNeverInstantiated.Local
         private class DelayConstructor
         {
             // Explicit static constructor to tell C# compiler
@@ -41,7 +38,7 @@ namespace GetCHM.Spider
             {
             }
 
-// ReSharper disable once MemberHidesStaticFromOuterClass
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             internal static readonly Repository Instance = new Repository();
         }
     }
