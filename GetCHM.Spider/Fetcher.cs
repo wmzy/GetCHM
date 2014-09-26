@@ -107,5 +107,18 @@ namespace GetCHM.Spider
 
             return null;
         }
+
+        public async Task FetchAsync(Uri[] urls)
+        {
+            Task[] tasks = new Task[urls.Length];
+            for (int i = 0; i < urls.Length; i++)
+            {
+                tasks[i] = FetchAsync(Repository.Instance.GetByKey(urls[i]));
+            }
+            foreach (var task in tasks)
+            {
+                await task;
+            }
+        }
     }
 }

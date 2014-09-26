@@ -24,6 +24,17 @@ namespace GetCHM.Spider
                 Depth = depth
             });
         }
+
+        public void Add(ResourceInfo resource)
+        {
+            _resource.Add(resource.Uri, resource);
+        }
+
+        public IEnumerable<ResourceInfo> Get()
+        {
+            return _resource.Values;
+        }
+
         public static Repository Instance
         {
             get { return DelayConstructor.Instance; }
@@ -40,6 +51,13 @@ namespace GetCHM.Spider
 
             // ReSharper disable once MemberHidesStaticFromOuterClass
             internal static readonly Repository Instance = new Repository();
+        }
+
+        public ResourceInfo GetByKey(Uri url)
+        {
+            ResourceInfo resource;
+            _resource.TryGetValue(url, out resource);
+            return resource;
         }
     }
 }

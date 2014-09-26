@@ -661,5 +661,5 @@ namespace GetCHM.Spider
 
     public delegate bool Filter(WebResponse res);
 
-    public delegate bool FilterUrl(string url);
+    
 }
