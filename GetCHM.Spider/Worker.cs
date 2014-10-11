@@ -37,19 +37,17 @@ namespace GetCHM.Spider
 
             for (int i = 0; i < Depth; ++i)
             {
-                // todo: parse i
-                
                 List<HtmlAttribute> urlAttributesToUpdate;
                 List<Uri> urlToFetch;
                 _parser.Parse(resources, out urlAttributesToUpdate, out urlToFetch);
-                // todo: fetch i+1
+                // fetch i+1
                 var newResources = await _fetcher.FetchAsync(urlToFetch.ToArray());
-                // todo: replace i
+                // replace i
                 foreach (var htmlAttribute in urlAttributesToUpdate)
                 {
                     htmlAttribute.Value = Repository.Instance.GetByKey(new Uri(htmlAttribute.Value)).FileName;
                 }
-                // todo: save i
+                // save i
                 foreach (var resource in resources)
                 {
                     resource.HtmlDocument.Save(resource.FileName);

@@ -36,7 +36,7 @@ namespace GetCHM.Spider
 
                             var absoluteUrl = new Uri(resource.Uri, urlAttr.Value);
                             urlAttr.Value = absoluteUrl.AbsoluteUri;
-                            // todo: 找出需要替换的标签和需要抓取的url
+
                             if (Repository.Instance.IsExist(absoluteUrl))
                             {
                                 var name = Repository.Instance.GetByKey(absoluteUrl).FileName;
