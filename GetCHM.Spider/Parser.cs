@@ -13,9 +13,11 @@ namespace GetCHM.Spider
             _elementQueries = elementQueries;
         }
 
-        public IList<HtmlAttribute> Parse(List<ResourceInfo> resources)
+        public void Parse(ResourceInfo[] resources, out List<HtmlAttribute> urlAttributesToUpdate, out List<Uri> urlToFetch)
         {
-            IList<HtmlAttribute> results = new List<HtmlAttribute>();
+            urlAttributesToUpdate = new List<HtmlAttribute>();
+            urlToFetch = new List<Uri>();
+
             foreach (var resource in resources)
             {
                 if (resource.HtmlDocument != null)
@@ -31,28 +33,36 @@ namespace GetCHM.Spider
                             if (urlAttr == null || string.IsNullOrWhiteSpace(urlAttr.Value))
                                 continue;
                             if (!FilterUrl(urlAttr.Value)) continue;
+
                             var absoluteUrl = new Uri(resource.Uri, urlAttr.Value);
-                            string name;
-                            if (Repository.Instance.IsExist(absoluteUrl) &&
-                                !string.IsNullOrEmpty(name = Repository.Instance.GetByKey(absoluteUrl).FileName))
+                            urlAttr.Value = absoluteUrl.AbsoluteUri;
+                            // todo: 找出需要替换的标签和需要抓取的url
+                            if (Repository.Instance.IsExist(absoluteUrl))
                             {
-                                urlAttr.Value = name;
+                                var name = Repository.Instance.GetByKey(absoluteUrl).FileName;
+                                if (!string.IsNullOrEmpty(name))
+                                {
+                                    urlAttr.Value = name;
+                                }
+                                else
+                                {
+                                    urlAttributesToUpdate.Add(urlAttr);
+                                }
                             }
                             else
                             {
-                                urlAttr.Value = absoluteUrl.AbsoluteUri;
-                                results.Add(urlAttr);
+                                urlToFetch.Add(absoluteUrl);
+                                urlAttributesToUpdate.Add(urlAttr);
                                 Repository.Instance.Add(absoluteUrl, resource.Depth + 1);
                             }
                         }
                     }
+                    ReplaceRelativeUrl(resource);
                 }
-                ReplaceRelativeUrl(resource);
             }
-            return results;
         }
 
-        private void ReplaceRelativeUrl(ResourceInfo resource)
+        public void ReplaceRelativeUrl(ResourceInfo resource)
         {
             // todo:替换相对url
         }

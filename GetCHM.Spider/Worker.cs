@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 
 namespace GetCHM.Spider
 {
@@ -32,17 +33,33 @@ namespace GetCHM.Spider
                 Repository.Instance.Add(resource);
             }
 
-            var resources = new List<ResourceInfo>(tasks.Length);
-            resources.AddRange(Repository.Instance.Get());
+            var resources = Repository.Instance.Get().ToArray();
 
             for (int i = 0; i < Depth; ++i)
             {
                 // todo: parse i
-                var attributes = _parser.Parse(resources);
+                
+                List<HtmlAttribute> urlAttributesToUpdate;
+                List<Uri> urlToFetch;
+                _parser.Parse(resources, out urlAttributesToUpdate, out urlToFetch);
                 // todo: fetch i+1
-                await _fetcher.FetchAsync(attributes.Select(attr => new Uri(attr.Value)).ToArray());
+                var newResources = await _fetcher.FetchAsync(urlToFetch.ToArray());
                 // todo: replace i
+                foreach (var htmlAttribute in urlAttributesToUpdate)
+                {
+                    htmlAttribute.Value = Repository.Instance.GetByKey(new Uri(htmlAttribute.Value)).FileName;
+                }
                 // todo: save i
+                foreach (var resource in resources)
+                {
+                    resource.HtmlDocument.Save(resource.FileName);
+                }
+                resources = newResources;
+            }
+            foreach (var resource in resources)
+            {
+                _parser.ReplaceRelativeUrl(resource);
+                resource.HtmlDocument.Save(resource.FileName);
             }
         }
 
