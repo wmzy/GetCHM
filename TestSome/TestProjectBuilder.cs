@@ -1,10 +1,9 @@
 ﻿using System;
 using GetCHM.Builder;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GetCHM.Spider;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-
-namespace Test
+namespace TestSome
 {
     [TestClass]
     public class TestProjectBuilder

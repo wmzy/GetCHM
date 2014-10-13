@@ -117,10 +117,7 @@ namespace GetCHM.Spider
                 resources[i] = Repository.Instance.GetByKey(urls[i]);
                 tasks[i] = FetchAsync(resources[i]);
             }
-            foreach (var task in tasks)
-            {
-                await task;
-            }
+            await Task.WhenAll(tasks);
             return resources;
         }
     }

@@ -51,6 +51,7 @@ namespace GetCHM.Spider
                 foreach (var resource in resources)
                 {
                     resource.HtmlDocument.Save(resource.FileName);
+                    resource.State = State.Saved;
                 }
                 resources = newResources;
             }
@@ -58,6 +59,7 @@ namespace GetCHM.Spider
             {
                 _parser.ReplaceRelativeUrl(resource);
                 resource.HtmlDocument.Save(resource.FileName);
+                resource.State = State.Saved;
             }
         }
 
