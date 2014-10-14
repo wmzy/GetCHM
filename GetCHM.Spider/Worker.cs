@@ -19,7 +19,7 @@ namespace GetCHM.Spider
             Depth = depth;
         }
 
-        public async void StartAsync()
+        public async Task StartAsync()
         {
             var tasks = new Task<ResourceInfo>[_seeds.Length];
             for (int i = 0; i < _seeds.Length; ++i)
