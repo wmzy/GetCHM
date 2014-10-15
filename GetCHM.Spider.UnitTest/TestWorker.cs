@@ -87,7 +87,7 @@ namespace GetCHM.Spider.UnitTest
             {
                 new Uri(@"http://www.ituring.com.cn/book/1421")
             };
-            var worker = new Worker(seeds, fetcher, parser, 2);
+            var worker = new Worker(seeds, fetcher, parser, 1);
             worker.StartAsync().Wait();
         }
     }

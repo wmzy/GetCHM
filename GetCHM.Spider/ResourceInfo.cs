@@ -10,6 +10,7 @@ namespace GetCHM.Spider
         public string FileName { get; set; }
         public MediaTypeHeaderValue ContentType { get; set; }
         public HtmlDocument HtmlDocument { get; set; }
+        public ElementQuery ElementQuery { get; set; }
         public int Depth { get; set; }
         public State State { get; set; }
     }

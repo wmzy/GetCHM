@@ -6,6 +6,7 @@
         Fetched,
         NotFound,
         Parsed,
-        Saved
+        Saved,
+        Error
     }
 }

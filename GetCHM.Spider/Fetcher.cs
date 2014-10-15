@@ -62,30 +62,44 @@ namespace GetCHM.Spider
                 resource.State = State.NotFound;
                 return;
             }
-            resource.FileName = Guid.NewGuid().ToString("N") +
-                                MimeMapping.ConvertMimeTypeToExtension(response.Content.Headers.ContentType.MediaType);
+            resource.FileName = Guid.NewGuid().ToString("N");
 
+
+            resource.ContentType = response.Content.Headers.ContentType;
             if (IsHtml(response.Content))
             {
                 resource.HtmlDocument = await GetHtmlAsync(response.Content);
+                resource.FileName += ".html";
                 resource.State = State.Fetched;
             }
             else
             {
+                string suffix;
+                if (resource.ElementQuery == null)
+                {
+                    suffix = MimeMapping.ConvertMimeTypeToExtension(resource.ContentType.MediaType);
+                }
+                else
+                {
+                    suffix =
+                        resource.ElementQuery.Suffix.NullOrEmptyDefault(
+                            MimeMapping.ConvertMimeTypeToExtension(resource.ContentType.MediaType)
+                                .NullOrWhiteSpaceDefault(resource.ElementQuery.OptionalSuffix));
+                }
+                resource.FileName += suffix;
                 using (var fs = File.OpenWrite(Path.Combine(SaveSavePath, resource.FileName)))
                 {
                     await response.Content.CopyToAsync(fs);
                 }
                 resource.State = State.Saved;
             }
-            resource.ContentType = response.Content.Headers.ContentType;
         }
 
         private static bool IsHtml(HttpContent content)
         {
             try
             {
-                return content.Headers.ContentType.MediaType.ToLower().Contains("html");
+                return content.Headers.ContentType.MediaType.ToLower().Contains("htm");
             }
             catch (Exception)
             {
@@ -107,7 +121,7 @@ namespace GetCHM.Spider
 
             return null;
         }
-
+        // todo: 过滤掉非html
         public async Task<ResourceInfo[]> FetchAsync(Uri[] urls)
         {
             Task[] tasks = new Task[urls.Length];

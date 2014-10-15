@@ -35,6 +35,8 @@ namespace GetCHM.Spider
                             if (!FilterUrl(urlAttr.Value)) continue;
 
                             var absoluteUrl = new Uri(resource.Uri, urlAttr.Value);
+                            if (!absoluteUrl.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase)) continue;
+
                             urlAttr.Value = absoluteUrl.AbsoluteUri;
 
                             if (Repository.Instance.IsExist(absoluteUrl))
@@ -53,7 +55,7 @@ namespace GetCHM.Spider
                             {
                                 urlToFetch.Add(absoluteUrl);
                                 urlAttributesToUpdate.Add(urlAttr);
-                                Repository.Instance.Add(absoluteUrl, resource.Depth + 1);
+                                Repository.Instance.Add(absoluteUrl, resource.Depth + 1, elementQuery);
                             }
                         }
                     }

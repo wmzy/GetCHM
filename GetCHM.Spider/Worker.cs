@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -50,15 +51,20 @@ namespace GetCHM.Spider
                 // save i
                 foreach (var resource in resources)
                 {
-                    resource.HtmlDocument.Save(resource.FileName);
+                    resource.HtmlDocument.Save(Path.Combine(_fetcher.SaveSavePath, resource.FileName));
                     resource.State = State.Saved;
                 }
                 resources = newResources;
             }
             foreach (var resource in resources)
             {
+                if (resource.HtmlDocument == null || string.IsNullOrWhiteSpace(resource.FileName))
+                {
+                    resource.State = State.Error;
+                    continue;
+                }
                 _parser.ReplaceRelativeUrl(resource);
-                resource.HtmlDocument.Save(resource.FileName);
+                resource.HtmlDocument.Save(Path.Combine(_fetcher.SaveSavePath, resource.FileName));
                 resource.State = State.Saved;
             }
         }

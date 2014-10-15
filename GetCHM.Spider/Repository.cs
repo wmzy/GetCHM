@@ -15,12 +15,13 @@ namespace GetCHM.Spider
             return _resource.ContainsKey(url);
         }
 
-        public void Add(Uri url, int depth)
+        public void Add(Uri url, int depth, ElementQuery elementQuery = null)
         {
             _resource.Add(url, new ResourceInfo
             {
                 Uri = url,
                 State = State.New,
+                ElementQuery = elementQuery,
                 Depth = depth
             });
         }
