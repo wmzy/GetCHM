@@ -14,6 +14,22 @@ namespace GetCHM.Spider
         private readonly HttpClient _httpClient;
         private string _savePath;
 
+        #region events
+        //public event EventHandler<PerFetchEventArgs> PerFetch;
+        //protected virtual void OnPerFetch(PerFetchEventArgs e)
+        //{
+        //    EventHandler<PerFetchEventArgs> handler = PerFetch;
+        //    if (handler != null) handler(this, e);
+        //}
+
+        public event EventHandler<DomLoadEventArgs> DomLoad;
+        protected virtual void OnDomLoad(DomLoadEventArgs e)
+        {
+            EventHandler<DomLoadEventArgs> handler = DomLoad;
+            if (handler != null) handler(this, e);
+        }
+        #endregion
+
         public string SaveSavePath
         {
             get { return _savePath; }
@@ -69,6 +85,7 @@ namespace GetCHM.Spider
             if (IsHtml(response.Content))
             {
                 resource.HtmlDocument = await GetHtmlAsync(response.Content);
+                OnDomLoad(new DomLoadEventArgs(resource.HtmlDocument));
                 resource.FileName += ".html";
                 resource.State = State.Fetched;
             }
@@ -121,7 +138,6 @@ namespace GetCHM.Spider
 
             return null;
         }
-        // todo: 过滤掉非html
         public async Task<ResourceInfo[]> FetchAsync(Uri[] urls)
         {
             Task[] tasks = new Task[urls.Length];

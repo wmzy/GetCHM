@@ -34,6 +34,7 @@ namespace GetCHM.Spider
                                 continue;
                             if (!FilterUrl(urlAttr.Value)) continue;
 
+                            // todo: 基URL应该参照文档<base>标签
                             var absoluteUrl = new Uri(resource.Uri, urlAttr.Value);
                             if (!absoluteUrl.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase)) continue;
 

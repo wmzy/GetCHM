@@ -64,30 +64,40 @@ namespace GetCHM.Spider.UnitTest
         {
             var client = new HttpClient();
             var fetcher = new Fetcher(client, @"F:\GetCHM");
+            fetcher.DomLoad += (sebder, e) =>
+            {
+                var html = e.HtmlDocument;
+                var nodes =
+                    html.DocumentNode.SelectNodes(
+                        "//*[@id='topnav' or @id='header' or @id='CommentForm' or @id='footer'] | //iframe");
+                foreach (var node in nodes)
+                {
+                    node.Remove();
+                }
+
+            };
             var parser = new Parser(new List<ElementQuery>()
             {
-                new ElementQuery {Query = "//a", AttributeName = "href", Suffix = ".html", IsAutoIdentifySuffix = true},
-                new ElementQuery {Query = "//img", AttributeName = "src", IsAutoIdentifySuffix = true},
+                new ElementQuery {Query = "//div[@class='minibook-list' or @class='well minibook-toc']//a", AttributeName = "href", OptionalSuffix = ".html"},
+                new ElementQuery {Query = "//img", AttributeName = "src"},
                 new ElementQuery
                 {
-                    Query = @"//script[@type='text/javascript']",
+                    Query = @"//script[@src]",
                     AttributeName = "src",
-                    Suffix = ".js",
-                    IsAutoIdentifySuffix = false
+                    Suffix = ".js"
                 },
                 new ElementQuery
                 {
                     Query = @"//link[@rel='stylesheet']",
                     AttributeName = "href",
-                    Suffix = ".css",
-                    IsAutoIdentifySuffix = false
+                    Suffix = ".css"
                 }
             });
             var seeds = new Uri[]
             {
-                new Uri(@"http://www.ituring.com.cn/book/1421")
+                new Uri(@"http://www.ituring.com.cn/minibook/950")
             };
-            var worker = new Worker(seeds, fetcher, parser, 1);
+            var worker = new Worker(seeds, fetcher, parser, 10);
             worker.StartAsync().Wait();
         }
     }

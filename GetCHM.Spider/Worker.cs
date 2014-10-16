@@ -27,10 +27,12 @@ namespace GetCHM.Spider
             {
                 tasks[i] = _fetcher.FetchAsync(_seeds[i]);
             }
+
             foreach (var task in tasks)
             {
                 var resource = await task;
                 resource.Depth = 0;
+                resource.FileName = "index_" + resource.FileName;
                 Repository.Instance.Add(resource);
             }
 
@@ -49,13 +51,16 @@ namespace GetCHM.Spider
                     htmlAttribute.Value = Repository.Instance.GetByKey(new Uri(htmlAttribute.Value)).FileName;
                 }
                 // save i
-                foreach (var resource in resources)
-                {
-                    resource.HtmlDocument.Save(Path.Combine(_fetcher.SaveSavePath, resource.FileName));
-                    resource.State = State.Saved;
-                }
+                SaveHtml(resources);
+
                 resources = newResources;
             }
+
+            SaveHtml(resources);
+        }
+
+        private void SaveHtml(ResourceInfo[] resources)
+        {
             foreach (var resource in resources)
             {
                 if (resource.HtmlDocument == null || string.IsNullOrWhiteSpace(resource.FileName))
