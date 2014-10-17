@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using HtmlAgilityPack;
 
 namespace GetCHM.Spider
@@ -22,6 +23,20 @@ namespace GetCHM.Spider
             {
                 if (resource.HtmlDocument != null)
                 {
+                    // 获取文档base url
+                    Uri baseUrl = null;
+                    var baseElem = resource.HtmlDocument.DocumentNode.SelectSingleNode("//head/base");
+                    if (baseElem != null)
+                    {
+                        var href = baseElem.GetAttributeValue("href", null);
+                        baseUrl = href != null ? new Uri(resource.Uri, href) : resource.Uri;
+                    }
+                    else
+                    {
+                        baseUrl = resource.Uri;
+                    }
+                    ReplaceRelativeUrl(resource.HtmlDocument, baseUrl);
+
                     foreach (var elementQuery in _elementQueries)
                     {
                         var elements = resource.HtmlDocument.DocumentNode.SelectNodes(elementQuery.Query);
@@ -34,8 +49,7 @@ namespace GetCHM.Spider
                                 continue;
                             if (!FilterUrl(urlAttr.Value)) continue;
 
-                            // todo: 基URL应该参照文档<base>标签
-                            var absoluteUrl = new Uri(resource.Uri, urlAttr.Value);
+                            var absoluteUrl = new Uri(baseUrl, urlAttr.Value);
                             if (!absoluteUrl.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase)) continue;
 
                             urlAttr.Value = absoluteUrl.AbsoluteUri;
@@ -60,12 +74,11 @@ namespace GetCHM.Spider
                             }
                         }
                     }
-                    ReplaceRelativeUrl(resource);
                 }
             }
         }
 
-        public void ReplaceRelativeUrl(ResourceInfo resource)
+        public void ReplaceRelativeUrl(HtmlDocument html, Uri baseUrl)
         {
             // todo:替换相对url
         }

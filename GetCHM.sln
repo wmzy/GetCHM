@@ -17,6 +17,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTest", "UnitTest", "{EE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetCHM.Spider.UnitTest", "GetCHM.Spider.UnitTest\GetCHM.Spider.UnitTest.csproj", "{647F3FA6-1849-4A77-B387-649801EB7FE6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{E9F72508-B722-4535-9786-FDD91161F60F}"
+	ProjectSection(SolutionItems) = preProject
+		Doc\contents.hhc = Doc\contents.hhc
+		Doc\keys.hhk = Doc\keys.hhk
+		Doc\project.hhp = Doc\project.hhp
+		README.md = README.md
+		Doc\使用hha.dll生成CHM.docx = Doc\使用hha.dll生成CHM.docx
+		Doc\自己动手写网络爬虫.pdf = Doc\自己动手写网络爬虫.pdf
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -68,7 +68,7 @@ namespace GetCHM.Spider
                     resource.State = State.Error;
                     continue;
                 }
-                _parser.ReplaceRelativeUrl(resource);
+                _parser.ReplaceRelativeUrl(resource.HtmlDocument, null);// todo
                 resource.HtmlDocument.Save(Path.Combine(_fetcher.SaveSavePath, resource.FileName));
                 resource.State = State.Saved;
             }
