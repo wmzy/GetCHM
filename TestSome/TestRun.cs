@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -105,6 +106,18 @@ namespace TestSome
         {
             string s = null;
             Console.WriteLine(s.NullOrEmptyDefault("sss"));
+        }
+
+        [TestMethod]
+        public void TestExcept()
+        {
+            double[] numbers1 = { 2.0, 2.1, 2.2, 2.3, 2.4, 2.5 };
+            double[] numbers2 = { 2.2, 2.6 };
+
+            IEnumerable<double> onlyInFirstSet = numbers1.Except(numbers2);
+
+            foreach (double number in onlyInFirstSet)
+                Console.WriteLine(number);
         }
     }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -12,13 +11,6 @@ namespace GetCHM.Spider.UnitTest
     [TestClass]
     public class TestWorker
     {
-        public TestWorker()
-        {
-            //
-            //TODO:  在此处添加构造函数逻辑
-            //
-        }
-
         private TestContext testContextInstance;
 
         /// <summary>
@@ -76,7 +68,7 @@ namespace GetCHM.Spider.UnitTest
                 }
 
             };
-            var parser = new Parser(new List<ElementQuery>()
+            var parser = new Parser(new List<ElementQuery>
             {
                 new ElementQuery {Query = "//div[@class='minibook-list' or @class='well minibook-toc']//a", AttributeName = "href", OptionalSuffix = ".html"},
                 new ElementQuery {Query = "//img", AttributeName = "src"},
@@ -93,7 +85,7 @@ namespace GetCHM.Spider.UnitTest
                     Suffix = ".css"
                 }
             });
-            var seeds = new Uri[]
+            var seeds = new[]
             {
                 new Uri(@"http://www.ituring.com.cn/minibook/950")
             };

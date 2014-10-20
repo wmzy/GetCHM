@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using HtmlAgilityPack;
 
 namespace GetCHM.Spider
@@ -24,7 +23,7 @@ namespace GetCHM.Spider
                 if (resource.HtmlDocument != null)
                 {
                     // 获取文档base url
-                    Uri baseUrl = null;
+                    Uri baseUrl;
                     var baseElem = resource.HtmlDocument.DocumentNode.SelectSingleNode("//head/base");
                     if (baseElem != null)
                     {

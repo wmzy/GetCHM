@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net.Http;
 using GetCHM.Spider;
 
 namespace GetCHM.CLI
@@ -7,32 +10,134 @@ namespace GetCHM.CLI
     class Program
     {
         private static Options _options;
-        static void Main(string[] args)
+
+        void Main(string[] args)
         {
             _options = new Options();
-            if (CommandLine.Parser.Default.ParseArguments(args, _options))
+            if (!CommandLine.Parser.Default.ParseArguments(args, _options, (s, o) =>
             {
-                DownloadHtml();
+                if (s.Equals("init"))
+                {
+                    Init((InitSubOptions) o);
+                }
+                else
+                {
+                    if (Directory.Exists(".getchm"))
+                    {
+                        Console.WriteLine("not a project");
+                        return;
+                    }
+
+                    switch (s)
+                    {
+                        case "init":
+
+                            break;
+                        case "seeds":
+                            Seeds((SeedsSubOptions) o);
+                            break;
+                        case "spider":
+                            Spider((SpiderSubOptions) o);
+                            break;
+                    }
+                }
+            }))
+            {
+                Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
             }
         }
 
-        private static void DownloadHtml()
+        private static void Init(InitSubOptions options)
         {
-            var downloader = new Downloader
+            var path = Path.Combine(options.Path, ".getchm");
+            if (Directory.Exists(path))
             {
-                FilePath = _options.FilePath ?? Path.Combine(Directory.GetCurrentDirectory(), "GetCHM", "src"),
-                MaxDepth = _options.Depth
-            };
-            // downloader.FilterUrl = url => url.StartsWith("http://www.jiangmiao.org/blog/wp-content/uploads/2011/01/2011-01-26-144055_1020x746_scrot.png");
+                Directory.Delete(path, true);
+            }
+            Directory.CreateDirectory(path);
+        }
 
-            for (int i = 0; i < _options.SeedUrls.Length; ++i)
+        private static void Seeds(SeedsSubOptions options)
+        {
+            var seedsPath = Path.Combine(".getchm", "seeds");
+
+            if (options.Clear)
             {
-                var resource = Registry.Instance.Add(new Uri(_options.SeedUrls[i]), ".html", "Index" + i);
-                resource.Depth = 0;
+                File.Delete(seedsPath);
+                Console.WriteLine("Seeds are cleared");
+            }
+            else if (options.AddSeeds != null)
+            {
+                File.AppendAllLines(seedsPath, options.AddSeeds);
+            }
+            else if (options.RemoveSeeds != null)
+            {
+                if (File.Exists(seedsPath))
+                    File.WriteAllLines(seedsPath, File.ReadAllLines(seedsPath).Except(options.RemoveSeeds).ToArray());
+
+                Console.WriteLine("removed success");
+            }
+            else
+            {
+                if (!File.Exists(seedsPath)) return;
+
+                foreach (var seed in File.ReadLines(seedsPath))
+                {
+                    Console.WriteLine(seed);
+                }
+            }
+        }
+
+        private static void Spider(SpiderSubOptions options)
+        {
+            var seedsPath = Path.Combine(".getchm", "seeds");
+            var srcPath = Path.Combine(".getchm", "src");
+            string[] seeds;
+
+            if (File.Exists(seedsPath) && (seeds = File.ReadAllLines(seedsPath)).Length <= 0)
+            {
+                Console.WriteLine("no seeds");
+                return;
             }
 
-            downloader.Start();
-            Console.WriteLine(downloader.FilePath);
+
+            var client = new HttpClient();
+            var fetcher = new Fetcher(client, srcPath);
+            fetcher.DomLoad += (sebder, e) =>
+            {
+                var html = e.HtmlDocument;
+                var nodes =
+                    html.DocumentNode.SelectNodes(
+                        "//*[@id='topnav' or @id='header' or @id='CommentForm' or @id='footer'] | //iframe");
+                foreach (var node in nodes)
+                {
+                    node.Remove();
+                }
+
+            };
+            var parser = new Parser(new List<ElementQuery>
+            {
+                new ElementQuery {Query = "//div[@class='minibook-list' or @class='well minibook-toc']//a", AttributeName = "href", OptionalSuffix = ".html"},
+                new ElementQuery {Query = "//img", AttributeName = "src"},
+                new ElementQuery
+                {
+                    Query = @"//script[@src]",
+                    AttributeName = "src",
+                    Suffix = ".js"
+                },
+                new ElementQuery
+                {
+                    Query = @"//link[@rel='stylesheet']",
+                    AttributeName = "href",
+                    Suffix = ".css"
+                }
+            });
+            //var seeds = new[]
+            //{
+            //    new Uri(@"http://www.ituring.com.cn/minibook/950")
+            //};
+            var worker = new Worker(seeds, fetcher, parser, 10);
+            worker.StartAsync().Wait();
         }
     }
 }
