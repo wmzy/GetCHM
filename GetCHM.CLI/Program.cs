@@ -94,7 +94,7 @@ namespace GetCHM.CLI
             var srcPath = Path.Combine(".getchm", "src");
             string[] seeds;
 
-            if (File.Exists(seedsPath) && (seeds = File.ReadAllLines(seedsPath)).Length <= 0)
+            if (!File.Exists(seedsPath) || (seeds = File.ReadAllLines(seedsPath)).Length <= 0)
             {
                 Console.WriteLine("no seeds");
                 return;
@@ -136,7 +136,7 @@ namespace GetCHM.CLI
             //{
             //    new Uri(@"http://www.ituring.com.cn/minibook/950")
             //};
-            var worker = new Worker(seeds, fetcher, parser, 10);
+            var worker = new Worker(seeds.Select(url => new Uri(url)).ToArray(), fetcher, parser, 10);
             worker.StartAsync().Wait();
         }
     }
