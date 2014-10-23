@@ -18,7 +18,7 @@ namespace GetCHM.CLI
             {
                 if (s.Equals("init"))
                 {
-                    Init((InitSubOptions) o);
+                    Init((InitSubOptions)o);
                 }
                 else
                 {
@@ -30,20 +30,35 @@ namespace GetCHM.CLI
 
                     switch (s)
                     {
-                        case "init":
-
+                        case "urlquery":
+                            ConfigUrlQuery((UrlQuerySubOptions) o);
                             break;
                         case "seeds":
-                            Seeds((SeedsSubOptions) o);
+                            Seeds((SeedsSubOptions)o);
                             break;
                         case "spider":
-                            Spider((SpiderSubOptions) o);
+                            Spider((SpiderSubOptions)o);
                             break;
                     }
                 }
             }))
             {
                 Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
+            }
+        }
+
+        private void ConfigUrlQuery(UrlQuerySubOptions options)
+        {
+            var queryPath = Path.Combine(".getchm", "elementquery");
+            if (options.Clear)
+            {
+                File.Delete(queryPath);
+                Console.WriteLine("elementquery clear");
+            }
+            else if (options.Add && !string.IsNullOrWhiteSpace(options.AttributeName))
+            {
+                // todo: 序列化到文件
+                File.AppendText(options.AttributeName);
             }
         }
 
@@ -100,21 +115,23 @@ namespace GetCHM.CLI
                 return;
             }
 
-
             var client = new HttpClient();
             var fetcher = new Fetcher(client, srcPath);
-            fetcher.DomLoad += (sebder, e) =>
-            {
-                var html = e.HtmlDocument;
-                var nodes =
-                    html.DocumentNode.SelectNodes(
-                        "//*[@id='topnav' or @id='header' or @id='CommentForm' or @id='footer'] | //iframe");
-                foreach (var node in nodes)
-                {
-                    node.Remove();
-                }
 
-            };
+            // Dom裁剪
+            if (string.IsNullOrWhiteSpace(options.TrimXpath))
+                fetcher.DomLoad += (sebder, e) =>
+                {
+                    var html = e.HtmlDocument;
+                    // "//*[@id='topnav' or @id='header' or @id='CommentForm' or @id='footer'] | //iframe"
+                    var nodes = html.DocumentNode.SelectNodes( options.TrimXpath );
+                    foreach (var node in nodes)
+                    {
+                        node.Remove();
+                    }
+
+                };
+
             var parser = new Parser(new List<ElementQuery>
             {
                 new ElementQuery {Query = "//div[@class='minibook-list' or @class='well minibook-toc']//a", AttributeName = "href", OptionalSuffix = ".html"},
@@ -136,7 +153,7 @@ namespace GetCHM.CLI
             //{
             //    new Uri(@"http://www.ituring.com.cn/minibook/950")
             //};
-            var worker = new Worker(seeds.Select(url => new Uri(url)).ToArray(), fetcher, parser, 10);
+            var worker = new Worker(seeds.Select(url => new Uri(url)).ToArray(), fetcher, parser, options.Depth);
             worker.StartAsync().Wait();
         }
     }

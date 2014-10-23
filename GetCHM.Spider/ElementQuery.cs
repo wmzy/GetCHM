@@ -1,5 +1,8 @@
-﻿namespace GetCHM.Spider
+﻿using System;
+
+namespace GetCHM.Spider
 {
+    [Serializable]
     public class ElementQuery
     {
         public string Query { get; set; }

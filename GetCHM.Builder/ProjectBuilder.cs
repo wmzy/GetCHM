@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using GetCHM.Spider;
-using WMZY.Util;
 
 namespace GetCHM.Builder
 {

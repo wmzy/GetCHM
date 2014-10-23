@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using CommandLine;
 
 namespace GetCHM.CLI
@@ -12,8 +9,10 @@ namespace GetCHM.CLI
         public InitSubOptions InitVerb { get; set; }
         [VerbOption("seeds", HelpText = "种子操作")]
         public SeedsSubOptions SeedsVerb { get; set; }
-        [VerbOption("Spider", HelpText = "爬虫")]
+        [VerbOption("spider", HelpText = "爬虫")]
         public SpiderSubOptions SpiderVerb { get; set; }
+        [VerbOption("urlquery", HelpText = "url查询xpath设置")]
+        public UrlQuerySubOptions UrlQueryVerb { get; set; }
 
         [HelpOption]
         public string GetUsage()
@@ -43,10 +42,37 @@ namespace GetCHM.CLI
         public bool Clear { get; set; }
     }
 
+    class UrlQuerySubOptions
+    {
+        [Option('a', "add", HelpText = "添加")]
+        public bool Add { get; set; }
+        [Option('r', "remove", HelpText = "移除")]
+        public bool Remove { get; set; }
+        [Option('c', "Clear", HelpText = "清空种子")]
+        public bool Clear { get; set; }
+        [ValueOption(0)]
+        public string Xpath { get; set; }
+        [Option("attr", Required = true, HelpText = "url属性名")]
+        public string AttributeName { get; set; }
+        [Option('s', "suffix", HelpText = "保存文件后缀")]
+        public string Suffix { get; set; }
+        [Option("optional-suffix", HelpText = "当无法判断保存文件后缀时使用此后缀")]
+        public string OptionalSuffix { get; set; }
+
+    }
+    class ConfigSubOptions
+    {
+        [Option('d', "depth", HelpText = "下载深度", DefaultValue = 5)]
+        public int Depth { get; set; }
+        [Option('t', "trim", HelpText = "Dom裁剪")]
+        public string TrimXpath { get; set; }
+    }
+
     class SpiderSubOptions
     {
         [Option('d', "depth", HelpText = "下载深度", DefaultValue = 5)]
         public int Depth { get; set; }
-        
+        [Option('t', "trim", HelpText = "Dom裁剪")]
+        public string TrimXpath { get; set; }
     }
 }
