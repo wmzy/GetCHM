@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.Serialization.Formatters.Binary;
 using GetCHM.Spider;
 
 namespace GetCHM.CLI
@@ -58,6 +59,16 @@ namespace GetCHM.CLI
             else if (options.Add && !string.IsNullOrWhiteSpace(options.AttributeName))
             {
                 // todo: 序列化到文件
+                ElementQuery[] elementQueries = null;
+                if (File.Exists(queryPath))
+                {
+                    using (var fs = File.OpenRead(queryPath))
+                    {
+                        var bf = new BinaryFormatter();
+                        elementQueries = (ElementQuery[]) bf.Deserialize(fs);
+
+                    }
+                }
                 File.AppendText(options.AttributeName);
             }
         }
