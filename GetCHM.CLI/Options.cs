@@ -9,6 +9,10 @@ namespace GetCHM.CLI
         public InitSubOptions InitVerb { get; set; }
         [VerbOption("seeds", HelpText = "种子操作")]
         public SeedsSubOptions SeedsVerb { get; set; }
+        [VerbOption("whitelist", HelpText = "白名单")]
+        public WhitelistSubOptions WhitelistVerb { get; set; }
+        [VerbOption("blacklist", HelpText = "黑名单")]
+        public BlacklistSubOptions BlacklistVerb { get; set; }
         [VerbOption("spider", HelpText = "爬虫")]
         public SpiderSubOptions SpiderVerb { get; set; }
         [VerbOption("urlquery", HelpText = "url查询xpath设置")]
@@ -35,10 +39,10 @@ namespace GetCHM.CLI
     class SeedsSubOptions
     {
         [OptionArray('a', "add", HelpText = "添加种子url")]
-        public string[] AddSeeds { get; set; }
+        public string AddSeed { get; set; }
         [OptionArray('r', "remove", HelpText = "移出种子url")]
-        public string[] RemoveSeeds { get; set; }
-        [Option('c', "Clear", HelpText = "清空种子")]
+        public string RemoveSeed { get; set; }
+        [Option('c', "clear", HelpText = "清空种子")]
         public bool Clear { get; set; }
     }
 
@@ -58,7 +62,27 @@ namespace GetCHM.CLI
         public string Suffix { get; set; }
         [Option("optional-suffix", HelpText = "当无法判断保存文件后缀时使用此后缀")]
         public string OptionalSuffix { get; set; }
+    }
 
+    class BlacklistSubOptions
+    {
+        [Option('a', "add", HelpText = "添加到黑名单，url正则表达式")]
+        public string AddRegex { get; set; }
+        [Option('r', "remove", HelpText = "从黑名单中移除")]
+        public string RemoveRegex { get; set; }
+        [Option('c', "clear", HelpText = "清空黑名单")]
+        public bool Clear { get; set; }
+    }
+
+    class WhitelistSubOptions
+    {
+        [Option('a', "add", HelpText = "添加到黑名单，url正则表达式")]
+        public string AddRegex { get; set; }
+        [Option('r', "remove", HelpText = "从黑名单中移除")]
+        public string RemoveRegex { get; set; }
+        [Option('c', "clear", HelpText = "清空黑名单")]
+        public bool Clear { get; set; }
+         
     }
     class ConfigSubOptions
     {

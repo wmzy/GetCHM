@@ -11,8 +11,12 @@ namespace GetCHM.CLI
     class Program
     {
         private static Options _options;
+        private static readonly string _seedsPath = Path.Combine(".getchm", "seeds");
+        private static readonly string _blacklistPath = Path.Combine(".getchm", "blacklist");
+        private static readonly string _whitelistPath = Path.Combine(".getchm", "whitelist");
+        private static readonly string _queryPath = Path.Combine(".getchm", "elementquery");
 
-        void Main(string[] args)
+        static void Main(string[] args)
         {
             _options = new Options();
             if (!CommandLine.Parser.Default.ParseArguments(args, _options, (s, o) =>
@@ -32,7 +36,13 @@ namespace GetCHM.CLI
                     switch (s)
                     {
                         case "urlquery":
-                            ConfigUrlQuery((UrlQuerySubOptions) o);
+                            ConfigUrlQuery((UrlQuerySubOptions)o);
+                            break;
+                        case "blacklist":
+                            Blacklist((BlacklistSubOptions)o);
+                            break;
+                        case "whitelist":
+                            Whitelist((WhitelistSubOptions) o);
                             break;
                         case "seeds":
                             Seeds((SeedsSubOptions)o);
@@ -48,28 +58,116 @@ namespace GetCHM.CLI
             }
         }
 
-        private void ConfigUrlQuery(UrlQuerySubOptions options)
+        private static void Blacklist(BlacklistSubOptions options)
         {
-            var queryPath = Path.Combine(".getchm", "elementquery");
             if (options.Clear)
             {
-                File.Delete(queryPath);
+                File.Delete(_blacklistPath);
+                Console.WriteLine("blacklist are cleared");
+                return;
+            }
+
+            var blacklist = File.Exists(_blacklistPath) ? File.ReadAllLines(_blacklistPath).ToList() : new List<string>(1);
+
+            if (!string.IsNullOrWhiteSpace(options.AddRegex) && !blacklist.Contains(options.AddRegex))
+            {
+                blacklist.Add(options.AddRegex);
+                File.WriteAllLines(_blacklistPath, blacklist);
+                Console.WriteLine("blacklist has been removed");
+            }
+            else if (!string.IsNullOrWhiteSpace(options.RemoveRegex))
+            {
+                blacklist.Remove(options.RemoveRegex);
+                File.WriteAllLines(_blacklistPath, blacklist);
+                Console.WriteLine("removed success");
+            }
+            else
+            {
+                foreach (var li in blacklist)
+                {
+                    Console.WriteLine(li);
+                }
+            }
+        }
+        private static void Whitelist(WhitelistSubOptions options)
+        {
+            if (options.Clear)
+            {
+                File.Delete(_whitelistPath);
+                Console.WriteLine("whitelist are cleared");
+                return;
+            }
+
+            var whitelist = File.Exists(_whitelistPath) ? File.ReadAllLines(_whitelistPath).ToList() : new List<string>(1);
+
+            if (!string.IsNullOrWhiteSpace(options.AddRegex) && !whitelist.Contains(options.AddRegex))
+            {
+                whitelist.Add(options.AddRegex);
+                File.WriteAllLines(_whitelistPath, whitelist);
+                Console.WriteLine("whitelist has been removed");
+            }
+            else if (!string.IsNullOrWhiteSpace(options.RemoveRegex))
+            {
+                whitelist.Remove(options.RemoveRegex);
+                File.WriteAllLines(_whitelistPath, whitelist);
+                Console.WriteLine("removed success");
+            }
+            else
+            {
+                foreach (var li in whitelist)
+                {
+                    Console.WriteLine(li);
+                }
+            }
+        }
+
+
+        private static void ConfigUrlQuery(UrlQuerySubOptions options)
+        {
+            if (options.Clear)
+            {
+                File.Delete(_queryPath);
                 Console.WriteLine("elementquery clear");
             }
             else if (options.Add && !string.IsNullOrWhiteSpace(options.AttributeName))
             {
-                // todo: 序列化到文件
-                ElementQuery[] elementQueries = null;
-                if (File.Exists(queryPath))
-                {
-                    using (var fs = File.OpenRead(queryPath))
-                    {
-                        var bf = new BinaryFormatter();
-                        elementQueries = (ElementQuery[]) bf.Deserialize(fs);
+                List<ElementQuery> elementQueries = File.Exists(_queryPath)
+                    ? (List<ElementQuery>)DeserializeFromFile(_queryPath)
+                    : new List<ElementQuery>(1);
 
-                    }
-                }
-                File.AppendText(options.AttributeName);
+                elementQueries.Add(new ElementQuery
+                {
+                    AttributeName = options.AttributeName,
+                    OptionalSuffix = options.OptionalSuffix,
+                    Query = options.Xpath,
+                    Suffix = options.Suffix
+                });
+
+                SerializeToFile(_queryPath, elementQueries);
+
+                Console.WriteLine("elementquery added");
+            }
+            else if (options.Remove)
+            {
+                Console.WriteLine("removed");
+            }
+        }
+
+        private static void SerializeToFile(string path, object obj)
+        {
+            using (var fs = File.Create(path))
+            {
+                var bf = new BinaryFormatter();
+                bf.Serialize(fs, obj);
+            }
+        }
+
+        private static object DeserializeFromFile(string path)
+        {
+            using (var fs = File.OpenRead(path))
+            {
+                var bf = new BinaryFormatter();
+                return bf.Deserialize(fs);
             }
         }
 
@@ -85,29 +183,30 @@ namespace GetCHM.CLI
 
         private static void Seeds(SeedsSubOptions options)
         {
-            var seedsPath = Path.Combine(".getchm", "seeds");
-
             if (options.Clear)
             {
-                File.Delete(seedsPath);
+                File.Delete(_seedsPath);
                 Console.WriteLine("Seeds are cleared");
+                return;
             }
-            else if (options.AddSeeds != null)
-            {
-                File.AppendAllLines(seedsPath, options.AddSeeds);
-            }
-            else if (options.RemoveSeeds != null)
-            {
-                if (File.Exists(seedsPath))
-                    File.WriteAllLines(seedsPath, File.ReadAllLines(seedsPath).Except(options.RemoveSeeds).ToArray());
 
+            var seeds = File.Exists(_seedsPath) ? File.ReadAllLines(_seedsPath).ToList() : new List<string>(1);
+
+            if (!string.IsNullOrWhiteSpace(options.AddSeed) && !seeds.Contains(options.AddSeed))
+            {
+                seeds.Add(options.AddSeed);
+                File.WriteAllLines(_seedsPath, seeds);
+                Console.WriteLine("seed has been removed");
+            }
+            else if (!string.IsNullOrWhiteSpace(options.RemoveSeed))
+            {
+                seeds.Remove(options.RemoveSeed);
+                File.WriteAllLines(_seedsPath, seeds);
                 Console.WriteLine("removed success");
             }
             else
             {
-                if (!File.Exists(seedsPath)) return;
-
-                foreach (var seed in File.ReadLines(seedsPath))
+                foreach (var seed in seeds)
                 {
                     Console.WriteLine(seed);
                 }
@@ -116,11 +215,10 @@ namespace GetCHM.CLI
 
         private static void Spider(SpiderSubOptions options)
         {
-            var seedsPath = Path.Combine(".getchm", "seeds");
             var srcPath = Path.Combine(".getchm", "src");
             string[] seeds;
 
-            if (!File.Exists(seedsPath) || (seeds = File.ReadAllLines(seedsPath)).Length <= 0)
+            if (!File.Exists(_seedsPath) || (seeds = File.ReadAllLines(_seedsPath)).Length <= 0)
             {
                 Console.WriteLine("no seeds");
                 return;
@@ -135,15 +233,16 @@ namespace GetCHM.CLI
                 {
                     var html = e.HtmlDocument;
                     // "//*[@id='topnav' or @id='header' or @id='CommentForm' or @id='footer'] | //iframe"
-                    var nodes = html.DocumentNode.SelectNodes( options.TrimXpath );
+                    var nodes = html.DocumentNode.SelectNodes(options.TrimXpath);
                     foreach (var node in nodes)
                     {
-                        node.Remove();
+                        if (node != null) node.Remove();
                     }
 
                 };
 
-            var parser = new Parser(new List<ElementQuery>
+            var eq = (List<ElementQuery>) DeserializeFromFile(_queryPath);
+            eq.AddRange(new List<ElementQuery>
             {
                 new ElementQuery {Query = "//div[@class='minibook-list' or @class='well minibook-toc']//a", AttributeName = "href", OptionalSuffix = ".html"},
                 new ElementQuery {Query = "//img", AttributeName = "src"},
@@ -160,6 +259,7 @@ namespace GetCHM.CLI
                     Suffix = ".css"
                 }
             });
+            var parser = new Parser(eq);
             //var seeds = new[]
             //{
             //    new Uri(@"http://www.ituring.com.cn/minibook/950")
