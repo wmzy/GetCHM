@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using CommandLine;
+using CommandLine.Text;
 
 namespace GetCHM.CLI
 {
@@ -18,15 +19,10 @@ namespace GetCHM.CLI
         [VerbOption("urlquery", HelpText = "url查询xpath设置")]
         public UrlQuerySubOptions UrlQueryVerb { get; set; }
 
-        [HelpOption]
-        public string GetUsage()
+        [HelpVerbOption]
+        public string GetUsage(string verb)
         {
-            // this without using CommandLine.Text
-            //  or using HelpText.AutoBuild
-            var usage = new StringBuilder();
-            usage.AppendLine("GetCHM-CLI 1.0");
-            usage.AppendLine("Read user manual for usage instructions...");
-            return usage.ToString();
+            return HelpText.AutoBuild(this, verb);
         }
     }
 
@@ -38,13 +34,18 @@ namespace GetCHM.CLI
 
     class SeedsSubOptions
     {
-        [OptionArray('a', "add", HelpText = "添加种子url")]
+        [Option('a', "add", HelpText = "添加种子url")]
         public string AddSeed { get; set; }
-        [OptionArray('r', "remove", HelpText = "移出种子url")]
+        [Option('r', "remove", HelpText = "移出种子url")]
         public string RemoveSeed { get; set; }
         [Option('c', "clear", HelpText = "清空种子")]
         public bool Clear { get; set; }
-    }
+        [HelpOption]
+        public string GetUsage()
+        {
+            return HelpText.AutoBuild(this);
+        }
+   }
 
     class UrlQuerySubOptions
     {
@@ -62,7 +63,7 @@ namespace GetCHM.CLI
         public string Suffix { get; set; }
         [Option("optional-suffix", HelpText = "当无法判断保存文件后缀时使用此后缀")]
         public string OptionalSuffix { get; set; }
-    }
+   }
 
     class BlacklistSubOptions
     {
@@ -72,7 +73,7 @@ namespace GetCHM.CLI
         public string RemoveRegex { get; set; }
         [Option('c', "clear", HelpText = "清空黑名单")]
         public bool Clear { get; set; }
-    }
+   }
 
     class WhitelistSubOptions
     {
@@ -82,15 +83,14 @@ namespace GetCHM.CLI
         public string RemoveRegex { get; set; }
         [Option('c', "clear", HelpText = "清空黑名单")]
         public bool Clear { get; set; }
-         
-    }
+   }
     class ConfigSubOptions
     {
         [Option('d', "depth", HelpText = "下载深度", DefaultValue = 5)]
         public int Depth { get; set; }
         [Option('t', "trim", HelpText = "Dom裁剪")]
         public string TrimXpath { get; set; }
-    }
+   }
 
     class SpiderSubOptions
     {
@@ -98,5 +98,5 @@ namespace GetCHM.CLI
         public int Depth { get; set; }
         [Option('t', "trim", HelpText = "Dom裁剪")]
         public string TrimXpath { get; set; }
-    }
+   }
 }

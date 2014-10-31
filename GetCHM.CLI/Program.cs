@@ -21,7 +21,7 @@ namespace GetCHM.CLI
             _options = new Options();
             if (!CommandLine.Parser.Default.ParseArguments(args, _options, (s, o) =>
             {
-                if (s.Equals("init"))
+                if (!string.IsNullOrEmpty(s) && s.Equals("init"))
                 {
                     Init((InitSubOptions)o);
                 }
@@ -173,7 +173,7 @@ namespace GetCHM.CLI
 
         private static void Init(InitSubOptions options)
         {
-            var path = Path.Combine(options.Path, ".getchm");
+            var path = string.IsNullOrWhiteSpace(options.Path) ? ".getchm" : Path.Combine(options.Path, ".getchm");
             if (Directory.Exists(path))
             {
                 Directory.Delete(path, true);
