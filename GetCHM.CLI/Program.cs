@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using GetCHM.Spider;
 
 namespace GetCHM.CLI
@@ -259,7 +260,21 @@ namespace GetCHM.CLI
                     Suffix = ".css"
                 }
             });
-            var parser = new Parser(eq);
+            var parser = new Parser(eq)
+            {
+                FilterUrl = url =>
+                {
+                    if (
+                        File.ReadLines(_whitelistPath)
+                            .Any(line => Regex.IsMatch(url, line, RegexOptions.IgnoreCase | RegexOptions.Singleline)))
+                    {
+                        return true;
+                    }
+                    return
+                        File.ReadLines(_blacklistPath)
+                            .All(line => !Regex.IsMatch(url, line, RegexOptions.IgnoreCase | RegexOptions.Singleline));
+                }
+            };
             //var seeds = new[]
             //{
             //    new Uri(@"http://www.ituring.com.cn/minibook/950")
