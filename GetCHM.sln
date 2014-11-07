@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{E9F72508-B72
 		Doc\自己动手写网络爬虫.pdf = Doc\自己动手写网络爬虫.pdf
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetCHM.GUI", "GetCHM.GUI\GetCHM.GUI.csproj", "{F27ABC35-C15C-42E4-BA88-4DA54713D6D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{647F3FA6-1849-4A77-B387-649801EB7FE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{647F3FA6-1849-4A77-B387-649801EB7FE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{647F3FA6-1849-4A77-B387-649801EB7FE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F27ABC35-C15C-42E4-BA88-4DA54713D6D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F27ABC35-C15C-42E4-BA88-4DA54713D6D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F27ABC35-C15C-42E4-BA88-4DA54713D6D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F27ABC35-C15C-42E4-BA88-4DA54713D6D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
